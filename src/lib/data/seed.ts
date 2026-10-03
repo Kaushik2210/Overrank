@@ -212,14 +212,15 @@ function addDemo(s: Store, now: number) {
     ["Season Finale", "Awards night and trophy handover.", 45, 150, "cat_events", "Main Auditorium"],
   ];
   demoEvents.forEach(([title, description, d, points, cat, location], i) => {
-    const startsAt = now + d * day;
-    const status = d < 0 ? "past" : d === 0 ? "live" : "upcoming";
+    const live = d === 0;
+    const startsAt = live ? now - 3600000 : now + d * day;
+    const status = d < 0 ? "past" : live ? "live" : "upcoming";
     s.events.push({
       id: `evt_demo_${String(i + 1).padStart(2, "0")}`,
       title,
       description,
       startsAt: new Date(startsAt).toISOString(),
-      endsAt: new Date(startsAt + 3 * 3600000).toISOString(),
+      endsAt: new Date(live ? now + 2 * day : startsAt + 3 * 3600000).toISOString(),
       points,
       categoryId: cat,
       categoryName: s.categories.find((c) => c.id === cat)!.name,
