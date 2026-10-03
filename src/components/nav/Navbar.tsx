@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Logo } from "./Logo";
 import { MORE_NAV, PRIMARY_NAV, isActive } from "./nav-config";
 import { UserMenu, type NavSession } from "./UserMenu";

@@ -313,7 +313,7 @@ export const supabaseRepo: Repo = {
     const byName = new Map(snap.teams.map((t) => [t.name.toLowerCase(), t.id]));
     for (const r of preview.valid) {
       const team_id = byName.get(r.team.toLowerCase())!;
-      const { data, error } = await db().from("students").upsert({ student_id: r.studentId, name: r.name, team_id }).select("student_id,name,team_id,user_id").single();
+      const { error } = await db().from("students").upsert({ student_id: r.studentId, name: r.name, team_id });
       if (error) fail(error);
     }
     await audit(actor, "roster.import", "roster", `${preview.adds} added, ${preview.updates} updated`);

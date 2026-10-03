@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { Info, LogOut, MoreHorizontal, Settings, ShieldCheck, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { PRIMARY_NAV, isActive } from "./nav-config";
 import { signOutAction } from "@/lib/actions/auth";
 import { cn } from "@/lib/utils";

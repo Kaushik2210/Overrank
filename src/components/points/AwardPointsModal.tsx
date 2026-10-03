@@ -27,8 +27,19 @@ type Props = {
   prefillStudent?: Pick | null;
 };
 
-export function AwardPointsModal({ open, onClose, categories, events, teams, prefillStudent }: Props) {
-  const [picked, setPicked] = useState<Pick[]>([]);
+/** Remounts the form every time the modal opens, so each award starts from a clean slate. */
+export function AwardPointsModal(props: Props) {
+  const [gen, setGen] = useState(0);
+  const [wasOpen, setWasOpen] = useState(props.open);
+  if (props.open !== wasOpen) {
+    setWasOpen(props.open);
+    if (props.open) setGen((g) => g + 1);
+  }
+  return <AwardPointsModalInner key={gen} {...props} />;
+}
+
+function AwardPointsModalInner({ open, onClose, categories, events, teams, prefillStudent }: Props) {
+  const [picked, setPicked] = useState<Pick[]>(prefillStudent ? [prefillStudent] : []);
   const [q, setQ] = useState("");
   const [results, setResults] = useState<Pick[]>([]);
   const [sign, setSign] = useState<1 | -1>(1);
@@ -43,22 +54,6 @@ export function AwardPointsModal({ open, onClose, categories, events, teams, pre
   const file = useRef<HTMLInputElement>(null);
   const [fileName, setFileName] = useState("");
   const { toast } = useToast();
-
-  // reset whenever the modal opens
-  useEffect(() => {
-    if (!open) return;
-    setPicked(prefillStudent ? [prefillStudent] : []);
-    setQ("");
-    setResults([]);
-    setSign(1);
-    setAmount("10");
-    setCategoryId("");
-    setEventId("");
-    setReason("");
-    setErrors({});
-    setResult(null);
-    setFileName("");
-  }, [open, prefillStudent]);
 
   // debounced student search
   useEffect(() => {
