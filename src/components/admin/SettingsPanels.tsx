@@ -153,6 +153,7 @@ export function RosterPanel() {
   const [preview, setPreview] = useState<RosterPreview | null>(null);
   const [rows, setRows] = useState<RosterRow[]>([]);
   const [msg, setMsg] = useState<string>();
+  const [codes, setCodes] = useState<{ studentId: string; name: string; code: string }[]>([]);
   const [pending, start] = useTransition();
   const file = useRef<HTMLInputElement>(null);
   const saved = useSave();
@@ -183,6 +184,26 @@ export function RosterPanel() {
           <input ref={file} type="file" accept=".csv,text/csv" className="sr-only" onChange={(e) => onFile(e.target.files?.[0])} />
         </label>
         {msg && <p role="alert" className="text-sm text-danger">{msg}</p>}
+        {codes.length > 0 && (
+          <div className="rounded-md border border-warn/30 bg-warn/10 p-3 text-sm">
+            <p className="text-warn">These one-time login codes are shown once. Download them now and hand them to the students.</p>
+            <Button
+              className="mt-3"
+              variant="outline"
+              onClick={() => {
+                const csv = ["studentId,name,code", ...codes.map((c) => `${c.studentId},"${c.name.replace(/"/g, '""')}",${c.code}`)].join("\n");
+                const a = document.createElement("a");
+                a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+                a.download = "housecore-login-codes.csv";
+                a.click();
+                URL.revokeObjectURL(a.href);
+                setCodes([]);
+              }}
+            >
+              Download login codes
+            </Button>
+          </div>
+        )}
         {preview && (
           <div className="space-y-3">
             <p className="num text-sm">
@@ -201,7 +222,13 @@ export function RosterPanel() {
               onClick={() =>
                 start(async () => {
                   const r = await saved(await commitRosterAction(rows), "Roster imported");
-                  if (r.ok) (setPreview(null), setRows([]), file.current && (file.current.value = ""));
+                  if (r.ok) {
+                    setPreview(null);
+                    setRows([]);
+                    if (file.current) file.current.value = "";
+                    const c = (r as { data?: { codes?: typeof codes } }).data?.codes;
+                    if (c?.length) setCodes(c);
+                  }
                 })
               }
             >
