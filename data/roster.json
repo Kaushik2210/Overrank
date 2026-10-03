@@ -1,0 +1,112 @@
+{
+  "teams": [
+    {
+      "name": "Slytherin",
+      "slug": "slytherin",
+      "colorPrimary": "#22C55E",
+      "colorGlow": "#4ADE80",
+      "members": [
+        { "studentId": "2647101", "name": "Abel Dsouza" },
+        { "studentId": "2647102", "name": "Aditya Basu" },
+        { "studentId": "2647104", "name": "Akriti Tigga" },
+        { "studentId": "2647108", "name": "Alisha Verma" },
+        { "studentId": "2647117", "name": "Chethan Raj L" },
+        { "studentId": "2647147", "name": "Sakshi Kumari" },
+        { "studentId": "2647149", "name": "Shafiya Taj" },
+        { "studentId": "2647155", "name": "Swastik Sahu" },
+        { "studentId": "2647160", "name": "Yusuf Shahnwas Ansari" },
+        { "studentId": "2647165", "name": "Gayathri V S" }
+      ]
+    },
+    {
+      "name": "The Nine-Nine",
+      "slug": "the-nine-nine",
+      "colorPrimary": "#2563EB",
+      "colorGlow": "#60A5FA",
+      "members": [
+        { "studentId": "2647110", "name": "Amlan Shanker" },
+        { "studentId": "2647114", "name": "Anooja Sreenivasan" },
+        { "studentId": "2647120", "name": "Dibam Ranjan Sinha" },
+        { "studentId": "2647124", "name": "Hemala Mohanraj" },
+        { "studentId": "2647129", "name": "Jude Vijay Chowri" },
+        { "studentId": "2647132", "name": "Khushi N Purohit" },
+        { "studentId": "2647133", "name": "Kirthan Thomas" },
+        { "studentId": "2647142", "name": "Priya Pratheesh" },
+        { "studentId": "2647143", "name": "Raghav Anand" },
+        { "studentId": "2647144", "name": "Revant Raj" }
+      ]
+    },
+    {
+      "name": "Anakonda",
+      "slug": "anakonda",
+      "colorPrimary": "#F59E0B",
+      "colorGlow": "#FBBF24",
+      "members": [
+        { "studentId": "2647113", "name": "Ankit Anand" },
+        { "studentId": "2647116", "name": "C Melvyn Savio" },
+        { "studentId": "2647119", "name": "Deore Arnav Ravindra" },
+        { "studentId": "2647122", "name": "Gerard Nicholas Paul M" },
+        { "studentId": "2647130", "name": "Judith M" },
+        { "studentId": "2647131", "name": "Khushi Jain" },
+        { "studentId": "2647136", "name": "Lokraj Joshi" },
+        { "studentId": "2647151", "name": "Sodagum Venkata Kaushik" },
+        { "studentId": "2647152", "name": "Soukhya Gurupad Hegde" },
+        { "studentId": "2647158", "name": "Vishal B G" }
+      ]
+    },
+    {
+      "name": "Tech Titans",
+      "slug": "tech-titans",
+      "colorPrimary": "#22D3EE",
+      "colorGlow": "#67E8F9",
+      "members": [
+        { "studentId": "2647109", "name": "Aman Sah" },
+        { "studentId": "2647135", "name": "Laby Jiji Ninan" },
+        { "studentId": "2647137", "name": "Manan Hemani" },
+        { "studentId": "2647138", "name": "Matthew Panachamoottil Eapen" },
+        { "studentId": "2647140", "name": "Philip Reji Rajan" },
+        { "studentId": "2647150", "name": "Shubh Pradhan" },
+        { "studentId": "2647156", "name": "Titus Mathew" },
+        { "studentId": "2647159", "name": "Vishnu R" },
+        { "studentId": "2647164", "name": "Suraj Raj" },
+        { "studentId": "2647166", "name": "Udaya Raghavendra" }
+      ]
+    },
+    {
+      "name": "Strange_Things",
+      "slug": "strange-things",
+      "colorPrimary": "#EF4444",
+      "colorGlow": "#F87171",
+      "members": [
+        { "studentId": "2647111", "name": "Angel Mariya C.J" },
+        { "studentId": "2647112", "name": "Angeline Daise Joe" },
+        { "studentId": "2647118", "name": "Deepanjali S" },
+        { "studentId": "2647127", "name": "Jacinta Joseph" },
+        { "studentId": "2647128", "name": "Joshal Leon Dsouza" },
+        { "studentId": "2647139", "name": "Palak Kashyap" },
+        { "studentId": "2647146", "name": "Sabari Kesav S" },
+        { "studentId": "2647154", "name": "Steve S Palakalam" },
+        { "studentId": "2647157", "name": "Varsha Sanjay" },
+        { "studentId": "2647162", "name": "Abhinab Kumar" }
+      ]
+    },
+    {
+      "name": "Upside Down",
+      "slug": "upside-down",
+      "colorPrimary": "#A855F7",
+      "colorGlow": "#C084FC",
+      "members": [
+        { "studentId": "2647103", "name": "Adrian Johan Leslie" },
+        { "studentId": "2647105", "name": "Aksa Maria Thomas" },
+        { "studentId": "2647107", "name": "Alby Jose" },
+        { "studentId": "2647115", "name": "Arpitha Theresa M A" },
+        { "studentId": "2647121", "name": "Feba Reji" },
+        { "studentId": "2647126", "name": "Iwin Jose" },
+        { "studentId": "2647145", "name": "S Anand" },
+        { "studentId": "2647148", "name": "Sandeep Mathew" },
+        { "studentId": "2647153", "name": "Sourav Bose" },
+        { "studentId": "2647163", "name": "Angel Rose Saju" }
+      ]
+    }
+  ]
+}
