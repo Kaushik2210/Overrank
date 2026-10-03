@@ -158,3 +158,8 @@ html[data-motion="reduce"] *, html[data-motion="reduce"] *::before, html[data-mo
   animation-iteration-count: 1 !important;
   transition-duration: 0.01ms !important;
 }
+
+@keyframes sheen {
+  to { transform: translateX(100%); }
+}
+.skeleton-sheen { animation: sheen 1.6s ease-in-out infinite; }
