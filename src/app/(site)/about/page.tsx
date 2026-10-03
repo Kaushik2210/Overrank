@@ -8,8 +8,8 @@ export const metadata: Metadata = { title: "About" };
 const RULES = [
   ["Points are earned, not given", "Faculty award points after verifying an achievement, and every award carries a reason."],
   ["Everything is on the record", "Each point lives in an append-only ledger. Corrections add a new entry instead of erasing history."],
-  ["You can always question it", "Spot a mistake? Open a dispute on any transaction. A teacher reviews it and the outcome is logged."],
-  ["Suggest what we missed", "Did something that deserves points? Submit a suggestion with evidence and faculty will review it."],
+  ["Open to everyone", "The leaderboard, team pages and player profiles are public. Only faculty sign in, and only faculty can award or change points."],
+  ["Mistakes get fixed, not hidden", "A wrong entry is reversed with a new compensating entry, so the history is never rewritten, and every faculty action is logged."],
 ];
 
 export default async function AboutPage() {

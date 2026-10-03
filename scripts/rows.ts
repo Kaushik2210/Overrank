@@ -89,33 +89,6 @@ export function demoRows(store: Store, m: Maps) {
     transactionsFirst: demoTx.filter((t) => !t.reversesId).map(toTx),
     transactionsSecond: demoTx.filter((t) => t.reversesId).map(toTx),
     studentAchievements: store.studentAchievements.map((x) => ({ achievement_id: achIds.get(x.achievementId), student_id: x.studentId, unlocked_at: x.unlockedAt, is_demo: true })),
-    suggestions: store.suggestions
-      .filter((s) => s.isDemo)
-      .map((s) => ({
-        student_id: s.studentId,
-        activity: s.activity,
-        description: s.description,
-        category_id: cat(s.categoryId),
-        suggested_points: s.suggestedPoints,
-        status: s.status,
-        review_note: s.reviewNote,
-        awarded_points: s.awardedPoints,
-        is_demo: true,
-        created_at: s.createdAt,
-      })),
-    disputes: store.disputes
-      .filter((d) => d.isDemo)
-      .map((d) => ({
-        transaction_id: txIds.get(d.transactionId),
-        student_id: d.studentId,
-        reason: d.reason,
-        status: d.status,
-        resolution: d.resolution,
-        review_note: d.reviewNote,
-        is_demo: true,
-        created_at: d.createdAt,
-      })),
-    notifications: store.notifications.map((n) => ({ user_id: null, title: n.title, body: n.body, kind: n.kind, is_demo: true, created_at: n.createdAt })),
     audit: store.audit.map((a) => ({ actor_id: null, actor_name: a.actorName, action: a.action, target: a.target, detail: a.detail, is_demo: true, created_at: a.createdAt })),
   };
 }

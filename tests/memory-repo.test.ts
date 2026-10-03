@@ -3,8 +3,7 @@ import { buildStore } from "@/lib/data/seed";
 import { memoryRepo as repo } from "@/lib/data/memory";
 import type { Session } from "@/lib/data/types";
 
-const admin: Session = { userId: "admin", role: "admin", name: "Test Admin", studentId: null, teamId: null };
-const student = (id: string, teamId: string): Session => ({ userId: id, role: "student", name: "S", studentId: id, teamId });
+const admin: Session = { userId: "admin", role: "admin", name: "Test Admin" };
 
 beforeEach(() => {
   (globalThis as unknown as { __hc: unknown }).__hc = buildStore({ demo: false });
@@ -40,12 +39,6 @@ describe("awarding points", () => {
     expect(names).toContain("Sportsperson");
   });
 
-  it("refuses students", async () => {
-    await expect(
-      repo.awardPoints(student("2647109", "team_tech-titans"), { studentIds: ["2647109"], amount: 50, categoryId: "cat_other", reason: "me" }),
-    ).rejects.toThrow("Not allowed");
-  });
-
   it("rejects zero amounts and unknown students", async () => {
     await expect(repo.awardPoints(admin, { studentIds: ["2647109"], amount: 0, categoryId: "cat_other", reason: "x" })).rejects.toThrow();
     await expect(repo.awardPoints(admin, { studentIds: ["nope"], amount: 5, categoryId: "cat_other", reason: "x" })).rejects.toThrow();
@@ -66,29 +59,6 @@ describe("reversal", () => {
     const { transactions } = await repo.awardPoints(admin, { studentIds: ["2647102"], amount: 40, categoryId: "cat_academics", reason: "x" });
     await repo.reverseTransaction(admin, transactions[0].id, "");
     await expect(repo.reverseTransaction(admin, transactions[0].id, "")).rejects.toThrow();
-  });
-});
-
-describe("disputes and suggestions", () => {
-  it("only lets a student dispute their own transaction", async () => {
-    const { transactions } = await repo.awardPoints(admin, { studentIds: ["2647102"], amount: 10, categoryId: "cat_other", reason: "x" });
-    await expect(
-      repo.createDispute(student("2647101", "team_slytherin"), { transactionId: transactions[0].id, reason: "not mine", evidenceUrl: null }),
-    ).rejects.toThrow();
-    const d = await repo.createDispute(student("2647102", "team_slytherin"), { transactionId: transactions[0].id, reason: "wrong", evidenceUrl: null });
-    expect(d.status).toBe("pending");
-  });
-
-  it("awards points when a suggestion is approved", async () => {
-    const sug = await repo.createSuggestion(student("2647102", "team_slytherin"), {
-      activity: "Ran a workshop",
-      description: "d",
-      categoryId: "cat_events",
-      suggestedPoints: 30,
-      evidenceUrl: null,
-    });
-    await repo.reviewSuggestion(admin, sug.id, "approved", 25, "ok");
-    expect((await repo.getStudents()).find((x) => x.id === "2647102")!.points).toBe(25);
   });
 });
 

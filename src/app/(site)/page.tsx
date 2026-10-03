@@ -10,7 +10,6 @@ import { TeamLogo } from "@/components/leaderboard/TeamLogo";
 import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
 import { StaggerGroup, StaggerItem } from "@/components/ui/Stagger";
-import { getSession } from "@/lib/auth";
 import { getRepo } from "@/lib/data";
 import { Icon } from "@/lib/icons";
 import { teamVars } from "@/lib/team-style";
@@ -27,14 +26,13 @@ const STEPS = [
 
 export default async function Landing() {
   const repo = getRepo();
-  const [teams, students, categories, events, achievements, overview, session] = await Promise.all([
+  const [teams, students, categories, events, achievements, overview] = await Promise.all([
     repo.getTeams(),
     repo.getStudents(),
     repo.getCategories(),
     repo.listEvents(),
     repo.listAchievements(),
     repo.getOverview(),
-    getSession(),
   ]);
   const performers = [...students].sort((a, b) => b.points - a.points).slice(0, 5);
   const upcoming = events.filter((e) => e.status !== "past").slice(0, 3);
@@ -43,7 +41,6 @@ export default async function Landing() {
   return (
     <>
       <Hero
-        signedIn={!!session}
         stats={[
           { label: "Students", value: overview.students },
           { label: "Teams", value: overview.teams },
@@ -181,11 +178,11 @@ export default async function Landing() {
           <h2 className="font-display text-4xl leading-tight font-bold sm:text-6xl">COMPETE. CONTRIBUTE. CLIMB.</h2>
           <p className="mt-4 text-lg text-dim">Your house is counting on you.</p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Button href={session ? "/dashboard" : "/login"} size="lg">
-              {session ? "GO TO DASHBOARD" : "SIGN IN WITH STUDENT ID"}
-            </Button>
-            <Button href="/leaderboard" size="lg" variant="outline">
+            <Button href="/leaderboard" size="lg">
               VIEW LEADERBOARD
+            </Button>
+            <Button href="/teams" size="lg" variant="outline">
+              MEET THE TEAMS
             </Button>
           </div>
         </Reveal>

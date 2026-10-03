@@ -54,27 +54,24 @@ export async function expectDenied(p: Promise<unknown>) {
 
 export type Seeded = Awaited<ReturnType<typeof seedBasics>>;
 
-/** Two teams, three students (two on team A), one admin, two categories, and auth accounts for each. */
+/** Two teams, three students, one admin, one teacher and one stranger (signed in, no faculty profile), two categories. */
 export async function seedBasics(db: PGlite) {
   const id = async (sql: string) => (await db.query<{ id: string }>(sql)).rows[0].id;
   const u = {
     admin: await id("insert into auth.users (email) values ('admin@x.local') returning id"),
-    s1: await id("insert into auth.users (email) values ('2647101@housecore.local') returning id"),
-    s2: await id("insert into auth.users (email) values ('2647102@housecore.local') returning id"),
-    s3: await id("insert into auth.users (email) values ('2647110@housecore.local') returning id"),
+    teacher: await id("insert into auth.users (email) values ('teacher@x.local') returning id"),
+    stranger: await id("insert into auth.users (email) values ('stranger@x.local') returning id"),
   };
   const teamA = await id("insert into teams (name, slug, color_primary, color_glow) values ('Alpha','alpha','#22C55E','#4ADE80') returning id");
   const teamB = await id("insert into teams (name, slug, color_primary, color_glow) values ('Beta','beta','#2563EB','#60A5FA') returning id");
   await db.exec(`
-    insert into students (student_id, name, team_id, user_id) values
-      ('2647101','Ada', '${teamA}', '${u.s1}'),
-      ('2647102','Bea', '${teamA}', '${u.s2}'),
-      ('2647110','Cy',  '${teamB}', '${u.s3}');
-    insert into profiles (id, role, name, student_id, team_id) values
-      ('${u.admin}', 'admin', 'Admin', null, null),
-      ('${u.s1}', 'student', 'Ada', '2647101', '${teamA}'),
-      ('${u.s2}', 'student', 'Bea', '2647102', '${teamA}'),
-      ('${u.s3}', 'student', 'Cy', '2647110', '${teamB}');
+    insert into students (student_id, name, team_id) values
+      ('2647101','Ada', '${teamA}'),
+      ('2647102','Bea', '${teamA}'),
+      ('2647110','Cy',  '${teamB}');
+    insert into profiles (id, role, name) values
+      ('${u.admin}', 'admin', 'Admin'),
+      ('${u.teacher}', 'teacher', 'Teacher');
   `);
   const sports = await id("insert into point_categories (name, slug) values ('Sports','sports') returning id");
   const other = await id("insert into point_categories (name, slug) values ('Other','other') returning id");

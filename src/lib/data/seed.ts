@@ -5,13 +5,10 @@ import type {
   AppSettings,
   AuditLog,
   Category,
-  Dispute,
   EventItem,
-  Notification,
   PointTransaction,
   Student,
   StudentAchievement,
-  Suggestion,
   Team,
 } from "./types";
 
@@ -21,12 +18,8 @@ export type Store = {
   categories: Category[];
   transactions: PointTransaction[];
   events: EventItem[];
-  registrations: { eventId: string; studentId: string }[];
   achievements: Achievement[];
   studentAchievements: StudentAchievement[];
-  suggestions: Suggestion[];
-  disputes: Dispute[];
-  notifications: Notification[];
   audit: AuditLog[];
   settings: AppSettings;
   demoLoaded: boolean;
@@ -129,12 +122,8 @@ export function buildStore(opts: { demo: boolean; now?: number } = { demo: false
     categories: CATEGORIES.map((c) => ({ ...c })),
     transactions: [],
     events: launchEvents(now),
-    registrations: [],
     achievements: CORE_ACHIEVEMENTS.map((a) => ({ ...a })),
     studentAchievements: [],
-    suggestions: [],
-    disputes: [],
-    notifications: [],
     audit: [],
     settings: {
       xp: { ...DEFAULT_XP, thresholds: [...DEFAULT_XP.thresholds] },
@@ -318,90 +307,6 @@ function addDemo(s: Store, now: number) {
       if (hit) s.studentAchievements.push({ achievementId: a.id, studentId: st.id, unlockedAt: when });
     }
   }
-
-  // suggestions
-  const sugg: [string, string, number, "pending" | "approved" | "rejected"][] = [
-    ["Organised a coding workshop", "cat_events", 40, "pending"],
-    ["Won inter-college chess", "cat_competitions", 60, "approved"],
-    ["Weekend blood donation camp", "cat_volunteering", 30, "pending"],
-    ["Published a short paper", "cat_academics", 80, "pending"],
-    ["Led a cleanup of the east block", "cat_volunteering", 25, "approved"],
-    ["Won a state-level debate", "cat_competitions", 90, "rejected"],
-    ["Mentored first-years for 4 weeks", "cat_leadership", 50, "pending"],
-    ["Designed the fest poster", "cat_fests", 30, "approved"],
-  ];
-  sugg.forEach(([activity, cat, pts, status], i) => {
-    const st = s.students[(i * 7 + 3) % s.students.length];
-    s.suggestions.push({
-      id: `sug_demo_${i + 1}`,
-      studentId: st.id,
-      studentName: st.name,
-      teamId: st.teamId,
-      activity,
-      description: `${activity}. Happy to share photos and a short write-up if needed.`,
-      categoryId: cat,
-      categoryName: s.categories.find((c) => c.id === cat)!.name,
-      suggestedPoints: pts,
-      evidenceUrl: null,
-      status,
-      reviewNote:
-        status === "rejected"
-          ? "Outside the season window. Please resubmit with dates."
-          : status === "approved"
-            ? "Approved as suggested."
-            : null,
-      awardedPoints: status === "approved" ? pts : null,
-      createdAt: new Date(now - (i + 1) * 2.3 * day).toISOString(),
-      isDemo: true,
-    });
-  });
-
-  // disputes
-  const disputable = s.transactions.filter((t) => t.status === "active" && !t.reversesId).slice(10, 14);
-  const dReasons = [
-    "I was not present at this event.",
-    "Points look lower than the rubric.",
-    "This should have been a team award.",
-    "Duplicate entry for the same activity.",
-  ];
-  disputable.forEach((tx, i) => {
-    const resolved = i === 3;
-    s.disputes.push({
-      id: `dis_demo_${i + 1}`,
-      transactionId: tx.id,
-      studentId: tx.studentId,
-      studentName: tx.studentName,
-      reason: dReasons[i],
-      evidenceUrl: null,
-      status: resolved ? "approved" : "pending",
-      resolution: resolved ? "corrected" : null,
-      reviewNote: resolved ? "Duplicate confirmed and corrected." : null,
-      createdAt: new Date(now - (i + 1) * 1.4 * day).toISOString(),
-      transaction: null,
-      isDemo: true,
-    });
-  });
-
-  // notifications
-  const notes: [string, string, Notification["kind"], number][] = [
-    ["Rank update", "A house has moved up to #1.", "rank", 1],
-    ["New event", "Inter-House Football registration is open.", "event", 2],
-    ["Points awarded", "New points were added to the ledger.", "points", 3],
-    ["Achievement unlocked", "A new badge is waiting in the gallery.", "achievement", 5],
-    ["Suggestion reviewed", "A suggestion was approved.", "review", 6],
-    ["Welcome to HOUSECORE", "Every point counts. Good luck this season.", "system", 40],
-  ];
-  notes.forEach(([title, body, kind, ago], i) =>
-    s.notifications.push({
-      id: `ntf_demo_${i + 1}`,
-      userId: "all",
-      title,
-      body,
-      kind,
-      read: i > 3,
-      createdAt: new Date(now - ago * day).toISOString(),
-    }),
-  );
 
   // audit trail for the most recent awards
   for (const tx of s.transactions.filter((t) => !t.reversesId).slice(-12)) {

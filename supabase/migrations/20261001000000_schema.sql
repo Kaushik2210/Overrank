@@ -1,9 +1,8 @@
 -- HOUSECORE schema.
 -- Point totals are never stored: they are derived from the append-only point_transactions ledger.
 
-create type public.app_role as enum ('student', 'teacher', 'admin');
+create type public.app_role as enum ('teacher', 'admin');
 create type public.tx_status as enum ('active', 'reversed', 'pending');
-create type public.review_status as enum ('pending', 'approved', 'rejected');
 create type public.achievement_rarity as enum ('common', 'rare', 'epic', 'legendary');
 
 create table public.teams (
@@ -20,19 +19,16 @@ create table public.students (
   student_id text primary key check (student_id ~ '^[0-9]{5,12}$'),
   name text not null check (char_length(name) between 1 and 120),
   team_id uuid not null references public.teams (id) on update cascade,
-  user_id uuid unique references auth.users (id) on delete set null,
   is_demo boolean not null default false,
   created_at timestamptz not null default now()
 );
 create index students_team_idx on public.students (team_id);
 
--- one row per signed-in account; role lives here and clients can never write it
+-- One row per faculty account. Only faculty sign in; role lives here and clients can never write it.
 create table public.profiles (
   id uuid primary key references auth.users (id) on delete cascade,
-  role public.app_role not null default 'student',
+  role public.app_role not null default 'teacher',
   name text not null,
-  student_id text unique references public.students (student_id) on update cascade on delete set null,
-  team_id uuid references public.teams (id) on update cascade on delete set null,
   created_at timestamptz not null default now()
 );
 
@@ -64,13 +60,6 @@ create table public.event_teams (
   event_id uuid not null references public.events (id) on delete cascade,
   team_id uuid not null references public.teams (id) on delete cascade,
   primary key (event_id, team_id)
-);
-
-create table public.event_registrations (
-  event_id uuid not null references public.events (id) on delete cascade,
-  student_id text not null references public.students (student_id) on update cascade on delete cascade,
-  created_at timestamptz not null default now(),
-  primary key (event_id, student_id)
 );
 
 create table public.point_transactions (
@@ -114,57 +103,6 @@ create table public.student_achievements (
   primary key (achievement_id, student_id)
 );
 
-create table public.suggestions (
-  id uuid primary key default gen_random_uuid(),
-  student_id text not null references public.students (student_id) on update cascade on delete cascade,
-  activity text not null check (char_length(activity) between 3 and 120),
-  description text not null check (char_length(description) between 10 and 1000),
-  category_id uuid not null references public.point_categories (id),
-  suggested_points integer not null check (suggested_points between 1 and 500),
-  evidence_path text,
-  status public.review_status not null default 'pending',
-  review_note text,
-  awarded_points integer,
-  reviewed_by uuid references auth.users (id) on delete set null,
-  is_demo boolean not null default false,
-  created_at timestamptz not null default now()
-);
-
-create table public.disputes (
-  id uuid primary key default gen_random_uuid(),
-  transaction_id uuid not null references public.point_transactions (id) on delete cascade,
-  student_id text not null references public.students (student_id) on update cascade on delete cascade,
-  reason text not null check (char_length(reason) between 10 and 800),
-  evidence_path text,
-  status public.review_status not null default 'pending',
-  resolution text check (resolution in ('corrected', 'modified', 'rejected')),
-  review_note text,
-  reviewed_by uuid references auth.users (id) on delete set null,
-  is_demo boolean not null default false,
-  created_at timestamptz not null default now()
-);
-create unique index one_open_dispute_per_tx on public.disputes (transaction_id) where status = 'pending';
-
-create table public.notifications (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid references auth.users (id) on delete cascade, -- null means everyone
-  title text not null,
-  body text not null,
-  kind text not null check (kind in ('points', 'rank', 'achievement', 'event', 'review', 'system')),
-  is_demo boolean not null default false,
-  created_at timestamptz not null default now()
-);
-create index notifications_user_idx on public.notifications (user_id, created_at desc);
-
--- per-user read and dismissed flags, so broadcast notifications can be handled individually
-create table public.notification_state (
-  user_id uuid not null references auth.users (id) on delete cascade,
-  notification_id uuid not null references public.notifications (id) on delete cascade,
-  read boolean not null default false,
-  dismissed boolean not null default false,
-  primary key (user_id, notification_id)
-);
-
 create table public.audit_logs (
   id uuid primary key default gen_random_uuid(),
   actor_id uuid references auth.users (id) on delete set null,
@@ -183,12 +121,6 @@ create table public.settings (
 );
 
 -- one-time first-login codes (hashed). Only the service role touches this table.
-create table public.login_codes (
-  student_id text primary key references public.students (student_id) on update cascade on delete cascade,
-  code_hash text not null,
-  created_at timestamptz not null default now()
-);
-
 -- tiny public pulse table. Realtime listeners subscribe here instead of the private ledger.
 create table public.rank_events (
   id bigint generated always as identity primary key,

@@ -6,9 +6,7 @@ import type {
   AwardInput,
   AwardResult,
   Category,
-  Dispute,
   EventItem,
-  Notification,
   PointTransaction,
   RosterPreview,
   RosterRow,
@@ -16,7 +14,6 @@ import type {
   Student,
   StudentDetail,
   StudentStanding,
-  Suggestion,
   Team,
   TeamDetail,
   TeamStanding,
@@ -54,24 +51,11 @@ export interface Repo {
   getEvent(id: string): Promise<EventItem | null>;
   saveEvent(actor: Session, input: Partial<EventItem> & Pick<EventItem, "title">): Promise<EventItem>;
   deleteEvent(actor: Session, id: string): Promise<void>;
-  registerForEvent(actor: Session, eventId: string): Promise<EventItem>;
   setEventWinner(actor: Session, eventId: string, teamId: string, awardPoints: boolean): Promise<void>;
 
   listAchievements(studentId?: string): Promise<(Achievement & { unlockedAt: string | null; unlockedBy: number })[]>;
   saveAchievement(actor: Session, input: Partial<Achievement> & Pick<Achievement, "name">): Promise<Achievement>;
   grantAchievement(actor: Session, achievementId: string, studentId: string): Promise<void>;
-
-  listSuggestions(filter?: { studentId?: string; status?: string }): Promise<Suggestion[]>;
-  createSuggestion(actor: Session, input: Pick<Suggestion, "activity" | "description" | "categoryId" | "suggestedPoints" | "evidenceUrl">): Promise<Suggestion>;
-  reviewSuggestion(actor: Session, id: string, decision: "approved" | "rejected", points: number | null, note: string): Promise<void>;
-
-  listDisputes(filter?: { studentId?: string; status?: string }): Promise<Dispute[]>;
-  createDispute(actor: Session, input: Pick<Dispute, "transactionId" | "reason" | "evidenceUrl">): Promise<Dispute>;
-  resolveDispute(actor: Session, id: string, decision: "corrected" | "modified" | "rejected", newAmount: number | null, note: string): Promise<void>;
-
-  listNotifications(userId: string): Promise<Notification[]>;
-  markNotificationRead(userId: string, id: string | "all"): Promise<void>;
-  dismissNotification(userId: string, id: string): Promise<void>;
 
   listAudit(limit?: number): Promise<AuditLog[]>;
   getAnalytics(): Promise<Analytics>;
@@ -80,7 +64,7 @@ export interface Repo {
   commitRoster(actor: Session, rows: RosterRow[]): Promise<{ added: number; updated: number; codes?: { studentId: string; name: string; code: string }[] }>;
 
   /** Admin-only overview numbers for the command centre. */
-  getOverview(): Promise<{ students: number; teams: number; pointsAwarded: number; activeEvents: number; pendingSuggestions: number; pendingDisputes: number }>;
+  getOverview(): Promise<{ students: number; teams: number; pointsAwarded: number; activeEvents: number }>;
 
   /** Used by the sign-in flow. */
   findStudent(id: string): Promise<Student | null>;

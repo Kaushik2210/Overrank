@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { Info, LayoutDashboard, LifeBuoy, Lightbulb, LogOut, MoreHorizontal, Settings, ShieldCheck, X } from "lucide-react";
+import { Info, LogOut, MoreHorizontal, Settings, ShieldCheck, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -25,15 +25,8 @@ export function MobileBottomNav({ role }: Props) {
 
   const moreItems = [
     { href: "/about", label: "About", icon: Info },
-    ...(role ? [{ href: "/dashboard", label: role === "student" ? "My profile" : "Student view", icon: LayoutDashboard }] : []),
-    ...(role === "student"
-      ? [
-          { href: "/suggestions", label: "Suggestions", icon: Lightbulb },
-          { href: "/disputes", label: "Disputes", icon: LifeBuoy },
-        ]
-      : []),
-    ...(role && role !== "student" ? [{ href: "/admin", label: "Command center", icon: ShieldCheck }] : []),
-    ...(role ? [{ href: "/settings", label: "Settings", icon: Settings }] : []),
+    { href: "/settings", label: "Settings", icon: Settings },
+    ...(role ? [{ href: "/admin", label: "Command center", icon: ShieldCheck }] : []),
   ];
   const moreActive = moreItems.some((m) => isActive(path, m.href));
 
@@ -85,7 +78,7 @@ export function MobileBottomNav({ role }: Props) {
                 {!role && (
                   <li>
                     <Link href="/login" className="flex h-12 items-center gap-3 rounded-md px-3 text-sm text-accent">
-                      Sign in
+                      Faculty login
                     </Link>
                   </li>
                 )}

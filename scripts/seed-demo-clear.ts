@@ -9,9 +9,6 @@ async function main() {
   const db = adminClient();
   const flagged = (table: string) => db.from(table).delete().eq("is_demo", true);
 
-  must(await flagged("disputes"), "clear disputes");
-  must(await flagged("suggestions"), "clear suggestions");
-  must(await flagged("notifications"), "clear notifications");
   must(await flagged("audit_logs"), "clear audit logs");
   must(await flagged("student_achievements"), "clear unlocked badges");
   // compensating rows first, because they reference the originals

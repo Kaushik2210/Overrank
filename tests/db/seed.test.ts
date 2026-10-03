@@ -47,9 +47,6 @@ describe("seed rows against a real database", () => {
     await insertRows(db, "point_transactions", rows.transactionsFirst);
     await insertRows(db, "point_transactions", rows.transactionsSecond);
     await insertRows(db, "student_achievements", rows.studentAchievements);
-    await insertRows(db, "suggestions", rows.suggestions);
-    await insertRows(db, "disputes", rows.disputes);
-    await insertRows(db, "notifications", rows.notifications);
     await insertRows(db, "audit_logs", rows.audit);
 
     expect(rows.transactionsFirst.length + rows.transactionsSecond.length).toBeGreaterThanOrEqual(100);
@@ -81,9 +78,6 @@ describe("seed rows against a real database", () => {
     await insertRows(db, "point_transactions", rows.transactionsFirst);
     await insertRows(db, "point_transactions", rows.transactionsSecond);
     await insertRows(db, "student_achievements", rows.studentAchievements);
-    await insertRows(db, "suggestions", rows.suggestions);
-    await insertRows(db, "disputes", rows.disputes);
-    await insertRows(db, "notifications", rows.notifications);
     await insertRows(db, "audit_logs", rows.audit);
 
     // one genuine transaction that must survive
@@ -92,9 +86,6 @@ describe("seed rows against a real database", () => {
 
     // the same order scripts/seed-demo-clear.ts uses
     for (const sql of [
-      "delete from disputes where is_demo",
-      "delete from suggestions where is_demo",
-      "delete from notifications where is_demo",
       "delete from audit_logs where is_demo",
       "delete from student_achievements where is_demo",
       "delete from point_transactions where is_demo and reverses_id is not null",
@@ -104,7 +95,7 @@ describe("seed rows against a real database", () => {
     ])
       await db.exec(sql);
 
-    for (const t of ["disputes", "suggestions", "notifications", "audit_logs", "student_achievements", "events"]) {
+    for (const t of ["audit_logs", "student_achievements", "events"]) {
       expect((await db.query(`select * from ${t}`)).rows, t).toHaveLength(0);
     }
     expect((await db.query("select * from point_transactions")).rows).toHaveLength(1);

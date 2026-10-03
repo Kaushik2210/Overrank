@@ -1,6 +1,6 @@
 import "server-only";
 import { z } from "zod";
-import { requireSession, requireStaff } from "@/lib/auth";
+import { requireStaff } from "@/lib/auth";
 import { rateLimit } from "@/lib/rate-limit";
 import type { Session } from "@/lib/data/types";
 
@@ -15,9 +15,9 @@ export function zodFail(e: z.ZodError): ActionResult<never> {
   return fail(e.issues[0]?.message ?? "Invalid input", fieldErrors);
 }
 
-/** Run a mutation as the signed-in user. Errors become typed results instead of crashing the page. */
-export async function run<T>(opts: { staff?: boolean; limit?: [string, number, number] }, fn: (s: Session) => Promise<T>): Promise<ActionResult<T>> {
-  const session = opts.staff ? await requireStaff() : await requireSession();
+/** Run a mutation as the signed-in faculty member. Errors become typed results instead of crashing the page. */
+export async function run<T>(opts: { staff?: boolean; limit?: [string, number, number] } = {}, fn: (s: Session) => Promise<T>): Promise<ActionResult<T>> {
+  const session = await requireStaff();
   if (opts.limit) {
     const [name, n, ms] = opts.limit;
     if (!rateLimit(`${name}:${session.userId}`, n, ms)) return fail("Too many requests. Please wait a moment and try again.");

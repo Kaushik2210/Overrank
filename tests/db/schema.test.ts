@@ -15,9 +15,12 @@ const award = (amount: number, ids = ["2647101"], cat?: string) =>
   db.query<AwardRow>("select public.award_points($1, 'Admin', $2::text[], $3, $4, 'Won the race')", [s.u.admin, ids, amount, cat ?? s.sports]);
 
 describe("migrations", () => {
-  it("apply cleanly and create the expected tables", async () => {
-    const { rows } = await db.query<{ n: number }>("select count(*)::int n from information_schema.tables where table_schema='public' and table_type='BASE TABLE'");
-    expect(rows[0].n).toBeGreaterThanOrEqual(16);
+  it("apply cleanly and create exactly the faculty-only table set", async () => {
+    const { rows } = await db.query<{ table_name: string }>("select table_name from information_schema.tables where table_schema='public' and table_type='BASE TABLE' order by 1");
+    expect(rows.map((r) => r.table_name)).toEqual([
+      "achievements", "audit_logs", "event_teams", "events", "point_categories", "point_transactions",
+      "profiles", "rank_events", "settings", "student_achievements", "students", "teams",
+    ]);
   });
 });
 
@@ -91,7 +94,7 @@ describe("achievements", () => {
     expect((await award(60)).rows[0].award_points.unlocked).toHaveLength(0);
     expect((await award(60)).rows[0].award_points.unlocked).toHaveLength(1);
     expect((await award(60)).rows[0].award_points.unlocked).toHaveLength(0);
-    expect((await db.query("select * from notifications where kind='achievement'")).rows).toHaveLength(1);
+    expect((await db.query("select * from student_achievements")).rows).toHaveLength(1);
   });
 
   it("unlock on category thresholds", async () => {
@@ -102,8 +105,8 @@ describe("achievements", () => {
 });
 
 describe("RPC rules", () => {
-  it("refuses a non-staff actor", async () => {
-    await expectDenied(db.query("select public.award_points($1, 'Ada', array['2647101'], 50, $2, 'self award')", [s.u.s1, s.sports]));
+  it("refuses an actor with no faculty profile", async () => {
+    await expectDenied(db.query("select public.award_points($1, 'Nobody', array['2647101'], 50, $2, 'self award')", [s.u.stranger, s.sports]));
   });
   it("refuses out-of-range amounts and unknown students", async () => {
     await expectDenied(award(5000));

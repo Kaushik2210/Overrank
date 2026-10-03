@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { Award, BarChart3, CalendarPlus, CalendarDays, Command as CommandIcon, Gauge, LifeBuoy, Lightbulb, MoreHorizontal, Plus, Search, Settings, Trophy, Users, UserSquare2, type LucideIcon } from "lucide-react";
+import { Award, BarChart3, CalendarPlus, CalendarDays, Command as CommandIcon, Gauge, MoreHorizontal, Plus, Search, Settings, Trophy, Users, UserSquare2, type LucideIcon } from "lucide-react";
 import { Command } from "cmdk";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -18,14 +18,12 @@ type Ctx = { openAward: (prefill?: Pick | null) => void; openPalette: () => void
 const AdminCtx = createContext<Ctx>({ openAward: () => {}, openPalette: () => {} });
 export const useAdmin = () => useContext(AdminCtx);
 
-const NAV: { href: string; label: string; icon: LucideIcon; badge?: "suggestions" | "disputes" }[] = [
+const NAV: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/admin", label: "Dashboard", icon: Gauge },
   { href: "/admin/points", label: "Manage Points", icon: Trophy },
   { href: "/admin/students", label: "Students", icon: Users },
   { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/admin/events", label: "Events", icon: CalendarDays },
-  { href: "/admin/suggestions", label: "Suggestions", icon: Lightbulb, badge: "suggestions" },
-  { href: "/admin/disputes", label: "Disputes", icon: LifeBuoy, badge: "disputes" },
   { href: "/admin/achievements", label: "Achievements", icon: Award },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
@@ -36,16 +34,14 @@ const active = (path: string, href: string) => (href === "/admin" ? path === "/a
 
 type Props = {
   session: NavSession;
-  bell: React.ReactNode;
   categories: Category[];
   events: EventItem[];
   teams: Team[];
   students: { id: string; name: string; teamName: string; teamColor: string; teamId: string; points: number }[];
-  counts: { suggestions: number; disputes: number };
   children: React.ReactNode;
 };
 
-export function AdminShell({ session, bell, categories, events, teams, students, counts, children }: Props) {
+export function AdminShell({ session, categories, events, teams, students, children }: Props) {
   const path = usePathname();
   const router = useRouter();
   const [awardOpen, setAwardOpen] = useState(false);
@@ -96,13 +92,11 @@ export function AdminShell({ session, bell, categories, events, teams, students,
             <nav aria-label="Admin" className="mt-4 flex-1 space-y-1 overflow-y-auto">
               {NAV.map((n) => {
                 const on = active(path, n.href);
-                const count = n.badge ? counts[n.badge] : 0;
                 return (
                   <Link key={n.href} href={n.href} aria-current={on ? "page" : undefined} className={cn("relative flex h-11 items-center gap-3 rounded-md px-3 text-sm font-medium transition-colors", on ? "text-ink" : "text-dim hover:text-ink")}>
                     {on && <motion.span layoutId="admin-pill" transition={spring} className="absolute inset-0 rounded-md border border-line bg-surface-2" />}
                     <n.icon className="relative size-[18px]" aria-hidden />
                     <span className="relative flex-1">{n.label}</span>
-                    {count > 0 && <span className="num relative rounded-full bg-accent/20 px-2 py-0.5 text-[11px] text-accent">{count}</span>}
                   </Link>
                 );
               })}
@@ -126,7 +120,6 @@ export function AdminShell({ session, bell, categories, events, teams, students,
               </kbd>
             </button>
             <div className="ml-auto flex items-center gap-2 max-lg:ml-0">
-              {bell}
               <UserMenu session={session} />
             </div>
           </header>
@@ -164,7 +157,6 @@ export function AdminShell({ session, bell, categories, events, teams, students,
           {MOBILE_MORE.map((n) => (
             <Link key={n.href} href={n.href} className="flex h-12 items-center gap-3 rounded-md px-3 text-sm active:bg-surface-2">
               <n.icon className="size-5 text-dim" aria-hidden /> {n.label}
-              {n.badge && counts[n.badge] > 0 && <span className="num ml-auto rounded-full bg-accent/20 px-2 py-0.5 text-[11px] text-accent">{counts[n.badge]}</span>}
             </Link>
           ))}
           <button onClick={() => openAward()} className="mt-1 flex h-12 w-full items-center justify-center gap-2 rounded-md bg-accent text-sm font-semibold text-bg-0">
@@ -184,8 +176,6 @@ export function AdminShell({ session, bell, categories, events, teams, students,
             <Item icon={Plus} onSelect={() => openAward()}>Award Points</Item>
             <Item icon={CalendarPlus} onSelect={() => go("/admin/events?new=1")}>Create Event</Item>
             <Item icon={Trophy} onSelect={() => go("/leaderboard")}>View Leaderboard</Item>
-            <Item icon={Lightbulb} onSelect={() => go("/admin/suggestions")}>View Suggestions</Item>
-            <Item icon={LifeBuoy} onSelect={() => go("/admin/disputes")}>View Disputes</Item>
             <Item icon={BarChart3} onSelect={() => go("/admin/analytics")}>View Analytics</Item>
           </Command.Group>
           <Command.Group heading="Teams" className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-faint [&_[cmdk-group-heading]]:uppercase">

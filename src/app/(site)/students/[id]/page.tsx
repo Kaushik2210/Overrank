@@ -19,6 +19,6 @@ export default async function StudentPage({ params }: Props) {
   const [detail, students, session] = await Promise.all([repo.getStudent(id), repo.getStudents(), getSession()]);
   if (!detail) notFound();
   // transaction detail pages are only linked for people allowed to open them
-  const canOpen = session && (session.role !== "student" || session.studentId === id);
+  const canOpen = !!session;
   return <StudentProfileView detail={detail} totalStudents={students.length} txHref={canOpen ? (t) => `/transactions/${t}` : undefined} />;
 }

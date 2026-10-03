@@ -11,17 +11,14 @@ import type {
   AuditLog,
   AwardInput,
   AwardResult,
-  Dispute,
   EventItem,
   EventStatus,
-  Notification,
   PointTransaction,
   RosterPreview,
   RosterRow,
   Session,
   StudentDetail,
   StudentStanding,
-  Suggestion,
   Team,
   TeamDetail,
   TeamStanding,
@@ -29,7 +26,7 @@ import type {
   UnlockedAchievement,
 } from "./types";
 
-type Globals = { __hc?: Store; __hcRead?: Set<string>; __hcGone?: Set<string> };
+type Globals = { __hc?: Store };
 const g = globalThis as unknown as Globals;
 
 /** Lets another repo run the read logic below against a snapshot it loaded from elsewhere (see supabase.ts). */
@@ -39,8 +36,6 @@ export const withSnapshot = <T>(store: Store, fn: () => Promise<T>) => snapshot.
 function S(): Store {
   return snapshot.getStore() ?? (g.__hc ??= buildStore({ demo: process.env.HOUSECORE_DEMO !== "0" }));
 }
-const readSet = () => (g.__hcRead ??= new Set());
-const goneSet = () => (g.__hcGone ??= new Set());
 
 const DAY = 86400000;
 const nowIso = () => new Date().toISOString();
@@ -121,15 +116,8 @@ function eventStatus(e: EventItem, now = Date.now()): EventStatus {
   return "past";
 }
 
-function withEventState(s: Store, e: EventItem): EventItem {
-  const regs = s.registrations.filter((r) => r.eventId === e.id);
-  const regTeams = new Set(regs.map((r) => s.students.find((x) => x.id === r.studentId)?.teamId).filter(Boolean) as string[]);
-  return {
-    ...e,
-    status: eventStatus(e),
-    registeredCount: e.registeredCount + regs.length,
-    teamIds: [...new Set([...e.teamIds, ...regTeams])],
-  };
+function withEventState(_s: Store, e: EventItem): EventItem {
+  return { ...e, status: eventStatus(e) };
 }
 
 function audit(s: Store, actor: Session, action: string, target: string, detail: string) {
@@ -137,12 +125,8 @@ function audit(s: Store, actor: Session, action: string, target: string, detail:
   if (s.audit.length > 1000) s.audit.length = 1000;
 }
 
-function notify(s: Store, n: Omit<Notification, "id" | "read" | "createdAt">) {
-  s.notifications.unshift({ ...n, id: randomUUID(), read: false, createdAt: nowIso() });
-}
-
 function mustBeStaff(actor: Session) {
-  if (actor.role === "student") throw new Error("Not allowed");
+  if (actor.role !== "admin" && actor.role !== "teacher") throw new Error("Not allowed");
 }
 
 /** Unlock any threshold achievements the student now qualifies for. */
@@ -160,7 +144,6 @@ function checkAchievements(s: Store, studentId: string): UnlockedAchievement[] {
     const ok = a.rule.kind === "points" ? total >= a.rule.threshold : (byCat.get(a.rule.categoryId) ?? 0) >= a.rule.threshold;
     if (!ok) continue;
     s.studentAchievements.push({ achievementId: a.id, studentId, unlockedAt: nowIso() });
-    notify(s, { userId: studentId, title: "Achievement unlocked", body: `${a.name}: ${a.description}`, kind: "achievement" });
     out.push({ studentId, studentName: student.name, achievement: a });
   }
   return out;
@@ -310,7 +293,6 @@ export const memoryRepo: Repo = {
         .map((c) => ({ categoryId: c.id, name: c.name, color: c.color, points: cat.get(c.id) ?? 0 }))
         .filter((c) => c.points !== 0)
         .sort((a, b) => b.points - a.points),
-      registeredEventIds: s.registrations.filter((r) => r.studentId === id).map((r) => r.eventId),
     };
   },
 
@@ -389,12 +371,6 @@ export const memoryRepo: Repo = {
         evidenceUrl: input.evidenceUrl ?? null,
       });
       transactions.push(tx);
-      notify(s, {
-        userId: id,
-        title: input.amount > 0 ? "Points awarded" : "Points deducted",
-        body: `${input.amount > 0 ? "+" : ""}${input.amount} for ${input.reason}`,
-        kind: "points",
-      });
       unlocked.push(...checkAchievements(s, id));
       audit(s, actor, input.amount > 0 ? "points.award" : "points.deduct", tx.studentName, `${input.amount > 0 ? "+" : ""}${input.amount} in ${tx.categoryName}: ${input.reason}`);
     }
@@ -402,7 +378,6 @@ export const memoryRepo: Repo = {
     const after = teamStandings(s);
     const aTeam = after.find((t) => t.id === first.teamId)!;
     const leaderChanged = after[0].id !== bLeader;
-    if (leaderChanged) notify(s, { userId: "all", title: "New leader", body: `${after[0].name} has taken the #1 spot.`, kind: "rank" });
     return {
       transactions,
       teamBefore: { rank: bTeam.rank, points: bTeam.points },
@@ -474,7 +449,6 @@ export const memoryRepo: Repo = {
       isDemo: false,
     };
     s.events.push(e);
-    notify(s, { userId: "all", title: "New event", body: `${e.title} has been scheduled.`, kind: "event" });
     audit(s, actor, "event.create", e.title, "");
     return withEventState(s, e);
   },
@@ -484,19 +458,7 @@ export const memoryRepo: Repo = {
     const e = s.events.find((x) => x.id === id);
     if (!e) return;
     s.events = s.events.filter((x) => x.id !== id);
-    s.registrations = s.registrations.filter((r) => r.eventId !== id);
     audit(s, actor, "event.delete", e.title, "");
-  },
-  async registerForEvent(actor, eventId) {
-    const s = S();
-    if (!actor.studentId) throw new Error("Only students can register");
-    const e = s.events.find((x) => x.id === eventId);
-    if (!e) throw new Error("Event not found");
-    if (eventStatus(e) === "past") throw new Error("This event has already finished");
-    if (!s.registrations.some((r) => r.eventId === eventId && r.studentId === actor.studentId)) {
-      s.registrations.push({ eventId, studentId: actor.studentId });
-    }
-    return withEventState(s, e);
   },
   async setEventWinner(actor, eventId, teamId, award) {
     mustBeStaff(actor);
@@ -515,7 +477,6 @@ export const memoryRepo: Repo = {
         eventId: e.id,
       });
     }
-    notify(s, { userId: "all", title: "Event result", body: `${t.name} won ${e.title}.`, kind: "event" });
   },
 
   async listAchievements(studentId) {
@@ -556,124 +517,7 @@ export const memoryRepo: Repo = {
     if (!a || !st) throw new Error("Not found");
     if (s.studentAchievements.some((x) => x.achievementId === achievementId && x.studentId === studentId)) return;
     s.studentAchievements.push({ achievementId, studentId, unlockedAt: nowIso() });
-    notify(s, { userId: studentId, title: "Achievement unlocked", body: `${a.name}: ${a.description}`, kind: "achievement" });
     audit(s, actor, "achievement.grant", st.name, a.name);
-  },
-
-  async listSuggestions(filter) {
-    return S()
-      .suggestions.filter((x) => (!filter?.studentId || x.studentId === filter.studentId) && (!filter?.status || x.status === filter.status))
-      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  },
-  async createSuggestion(actor, input) {
-    const s = S();
-    if (!actor.studentId) throw new Error("Only students can submit suggestions");
-    const st = s.students.find((x) => x.id === actor.studentId)!;
-    const cat = s.categories.find((c) => c.id === input.categoryId);
-    if (!cat) throw new Error("Unknown category");
-    const sug: Suggestion = {
-      id: randomUUID(),
-      studentId: st.id,
-      studentName: st.name,
-      teamId: st.teamId,
-      ...input,
-      categoryName: cat.name,
-      status: "pending",
-      reviewNote: null,
-      awardedPoints: null,
-      createdAt: nowIso(),
-      isDemo: false,
-    };
-    s.suggestions.unshift(sug);
-    return sug;
-  },
-  async reviewSuggestion(actor, id, decision, points, note) {
-    mustBeStaff(actor);
-    const s = S();
-    const sug = s.suggestions.find((x) => x.id === id);
-    if (!sug) throw new Error("Suggestion not found");
-    if (sug.status !== "pending") throw new Error("Already reviewed");
-    sug.status = decision;
-    sug.reviewNote = note || null;
-    if (decision === "approved") {
-      const amount = points ?? sug.suggestedPoints;
-      sug.awardedPoints = amount;
-      await memoryRepo.awardPoints(actor, { studentIds: [sug.studentId], amount, categoryId: sug.categoryId, reason: `Approved suggestion: ${sug.activity}` });
-    }
-    notify(s, { userId: sug.studentId, title: "Suggestion reviewed", body: `"${sug.activity}" was ${decision}.`, kind: "review" });
-    audit(s, actor, `suggestion.${decision}`, sug.studentName, `${sug.activity}${sug.awardedPoints ? ` (+${sug.awardedPoints})` : ""}`);
-  },
-
-  async listDisputes(filter) {
-    const s = S();
-    return s.disputes
-      .filter((x) => (!filter?.studentId || x.studentId === filter.studentId) && (!filter?.status || x.status === filter.status))
-      .map((d) => ({ ...d, transaction: s.transactions.find((t) => t.id === d.transactionId) ?? null }))
-      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  },
-  async createDispute(actor, input) {
-    const s = S();
-    if (!actor.studentId) throw new Error("Only students can raise disputes");
-    const tx = s.transactions.find((t) => t.id === input.transactionId);
-    if (!tx || tx.studentId !== actor.studentId) throw new Error("You can only dispute your own transactions");
-    if (s.disputes.some((d) => d.transactionId === tx.id && d.status === "pending")) throw new Error("A dispute is already open for this transaction");
-    const st = s.students.find((x) => x.id === actor.studentId)!;
-    const d: Dispute = {
-      id: randomUUID(),
-      transactionId: tx.id,
-      studentId: st.id,
-      studentName: st.name,
-      reason: input.reason,
-      evidenceUrl: input.evidenceUrl,
-      status: "pending",
-      resolution: null,
-      reviewNote: null,
-      createdAt: nowIso(),
-      transaction: tx,
-      isDemo: false,
-    };
-    s.disputes.unshift(d);
-    return d;
-  },
-  async resolveDispute(actor, id, decision, newAmount, note) {
-    mustBeStaff(actor);
-    const s = S();
-    const d = s.disputes.find((x) => x.id === id);
-    if (!d) throw new Error("Dispute not found");
-    if (d.status !== "pending") throw new Error("Already resolved");
-    const tx = s.transactions.find((t) => t.id === d.transactionId);
-    if (decision !== "rejected" && tx && tx.status === "active" && !tx.reversesId) {
-      await memoryRepo.reverseTransaction(actor, tx.id, `dispute ${decision}`);
-      if (decision === "modified" && newAmount) {
-        await memoryRepo.awardPoints(actor, { studentIds: [tx.studentId], amount: newAmount, categoryId: tx.categoryId, reason: `Corrected: ${tx.reason}`, eventId: tx.eventId });
-      }
-    }
-    d.status = decision === "rejected" ? "rejected" : "approved";
-    d.resolution = decision;
-    d.reviewNote = note || null;
-    notify(s, { userId: d.studentId, title: "Dispute resolved", body: `Your dispute was ${decision}.`, kind: "review" });
-    audit(s, actor, `dispute.${decision}`, d.studentName, note);
-  },
-
-  async listNotifications(userId) {
-    const s = S();
-    return s.notifications
-      .filter((n) => (n.userId === "all" || n.userId === userId) && !goneSet().has(`${userId}|${n.id}`))
-      .map((n) => ({ ...n, read: n.userId === "all" ? n.read || readSet().has(`${userId}|${n.id}`) : n.read }))
-      .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
-      .slice(0, 50);
-  },
-  async markNotificationRead(userId, id) {
-    const s = S();
-    for (const n of s.notifications) {
-      if (n.userId !== "all" && n.userId !== userId) continue;
-      if (id !== "all" && n.id !== id) continue;
-      if (n.userId === "all") readSet().add(`${userId}|${n.id}`);
-      else n.read = true;
-    }
-  },
-  async dismissNotification(userId, id) {
-    goneSet().add(`${userId}|${id}`);
   },
 
   async listAudit(limit = 40): Promise<AuditLog[]> {
@@ -762,8 +606,6 @@ export const memoryRepo: Repo = {
       teams: s.teams.length,
       pointsAwarded: counted(s).filter((t) => t.amount > 0 && !t.reversesId).reduce((n, t) => n + t.amount, 0),
       activeEvents: s.events.filter((e) => eventStatus(e) !== "past").length,
-      pendingSuggestions: s.suggestions.filter((x) => x.status === "pending").length,
-      pendingDisputes: s.disputes.filter((x) => x.status === "pending").length,
     };
   },
 

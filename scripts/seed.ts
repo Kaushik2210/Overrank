@@ -1,13 +1,11 @@
 /**
  * npm run seed
  * Idempotent. Creates the teams, categories, students (from data/roster.json), core achievements, launch
- * events, one admin account, and a login account plus one-time code for every student.
+ * events and one faculty admin account. Students do not sign in, so no student accounts are created.
  * Real students start at 0 points. Re-running never overwrites edits made in the admin area.
  */
 import { randomBytes } from "node:crypto";
-import { writeFileSync } from "node:fs";
 import { buildStore } from "../src/lib/data/seed";
-import { provisionStudent } from "../src/lib/supabase/accounts";
 import { coreRows, resolveRule } from "./rows";
 import { adminClient, must } from "./env";
 
@@ -66,19 +64,7 @@ async function main() {
     must(await db.from("profiles").upsert({ id: created.data.user.id, role: "admin", name: "Faculty Admin" }), "admin profile");
   }
 
-  // student accounts and first-login codes
-  const students = must(await db.from("students").select("student_id,name,team_id,user_id"), "read students");
-  const codes: string[] = ["studentId,name,code"];
-  for (const s of students) {
-    const code = await provisionStudent(db, s);
-    if (code) codes.push(`${s.student_id},"${(s.name as string).replace(/"/g, '""')}",${code}`);
-  }
-  if (codes.length > 1) {
-    writeFileSync("data/login-codes.csv", codes.join("\n") + "\n");
-    console.log(`Wrote ${codes.length - 1} one-time login codes to data/login-codes.csv (git-ignored). Hand them out, then delete the file.`);
-  } else {
-    console.log("All students already have accounts. No new login codes issued.");
-  }
+  const students = must(await db.from("students").select("student_id"), "read students");
 
   console.log(`Seeded ${teams.size} teams, ${cats.size} categories, ${students.length} students.`);
   console.log(`Admin sign-in: ${adminEmail}`);

@@ -14,7 +14,7 @@ const cell = (v: string | number) => `"${safe(v).replace(/"/g, '""')}"`;
 
 export async function GET(req: Request) {
   const session = await getSession();
-  if (!session || session.role === "student") return new NextResponse("Forbidden", { status: 403 });
+  if (!session) return new NextResponse("Forbidden", { status: 403 });
   const sp = new URL(req.url).searchParams;
   const q: TxQuery = {
     q: sp.get("q") ?? undefined,

@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { ChevronDown, LayoutDashboard, LifeBuoy, LogIn, LogOut, Settings, ShieldCheck, Lightbulb } from "lucide-react";
+import { ChevronDown, LogIn, LogOut, Settings, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { signOutAction } from "@/lib/actions/auth";
@@ -30,21 +30,13 @@ export function UserMenu({ session }: { session: NavSession }) {
   if (!session) {
     return (
       <Button href="/login" size="sm" variant="outline">
-        <LogIn className="size-4" /> Sign in
+        <LogIn className="size-4" /> Faculty login
       </Button>
     );
   }
 
-  const staff = session.role !== "student";
   const items = [
-    ...(staff ? [{ href: "/admin", label: "Command center", icon: ShieldCheck }] : []),
-    { href: "/dashboard", label: staff ? "Student view" : "My profile", icon: LayoutDashboard },
-    ...(!staff
-      ? [
-          { href: "/suggestions", label: "Suggestions", icon: Lightbulb },
-          { href: "/disputes", label: "Disputes", icon: LifeBuoy },
-        ]
-      : []),
+    { href: "/admin", label: "Command center", icon: ShieldCheck },
     { href: "/settings", label: "Settings", icon: Settings },
   ];
 

@@ -1,12 +1,8 @@
 "use client";
 
 import { AnimatePresence, LayoutGroup, motion } from "motion/react";
-import { Check } from "lucide-react";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { EventCard } from "./EventCard";
-import { Button } from "@/components/ui/Button";
-import { useToast } from "@/components/ui/Toast";
-import { registerForEventAction } from "@/lib/actions/events";
 import { cn } from "@/lib/utils";
 import { spring } from "@/lib/motion";
 import type { EventItem, EventStatus, Team } from "@/lib/data/types";
@@ -19,39 +15,7 @@ const FILTERS: { id: Filter; label: string }[] = [
   { id: "past", label: "Past" },
 ];
 
-function RegisterButton({ event, registered, canRegister }: { event: EventItem; registered: boolean; canRegister: boolean }) {
-  const [pending, start] = useTransition();
-  const [done, setDone] = useState(registered);
-  const { toast } = useToast();
-  if (event.status === "past") return null;
-  if (!canRegister) return <p className="text-xs text-faint">Sign in as a student to register.</p>;
-  if (done)
-    return (
-      <p className="flex h-11 items-center gap-2 text-sm text-success">
-        <Check className="size-4" aria-hidden /> You are registered
-      </p>
-    );
-  return (
-    <Button
-      loading={pending}
-      variant="team"
-      className="w-full bg-accent text-bg-0"
-      onClick={() =>
-        start(async () => {
-          const r = await registerForEventAction(event.id);
-          if (r.ok) {
-            setDone(true);
-            toast({ kind: "success", title: "Registered", body: event.title });
-          } else toast({ kind: "error", title: "Could not register", body: r.error });
-        })
-      }
-    >
-      Register
-    </Button>
-  );
-}
-
-export function EventsBrowser({ events, teams, registeredIds, canRegister }: { events: EventItem[]; teams: Team[]; registeredIds: string[]; canRegister: boolean }) {
+export function EventsBrowser({ events, teams }: { events: EventItem[]; teams: Team[] }) {
   const [filter, setFilter] = useState<Filter>("all");
   const shown = events.filter((e) => filter === "all" || e.status === filter);
   const counts = (f: Filter) => (f === "all" ? events.length : events.filter((e) => e.status === f).length);
@@ -83,7 +47,7 @@ export function EventsBrowser({ events, teams, registeredIds, canRegister }: { e
             <AnimatePresence mode="popLayout" initial={false}>
               {shown.map((e) => (
                 <motion.div key={e.id} layout initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.96 }} transition={spring}>
-                  <EventCard event={e} teams={teams} action={<RegisterButton event={e} registered={registeredIds.includes(e.id)} canRegister={canRegister} />} />
+                  <EventCard event={e} teams={teams} />
                 </motion.div>
               ))}
             </AnimatePresence>

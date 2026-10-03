@@ -1,4 +1,4 @@
-export type Role = "student" | "teacher" | "admin";
+export type Role = "teacher" | "admin";
 
 export type Team = {
   id: string;
@@ -109,51 +109,6 @@ export type StudentAchievement = {
   unlockedAt: string;
 };
 
-export type ReviewStatus = "pending" | "approved" | "rejected";
-
-export type Suggestion = {
-  id: string;
-  studentId: string;
-  studentName: string;
-  teamId: string;
-  activity: string;
-  description: string;
-  categoryId: string;
-  categoryName: string;
-  suggestedPoints: number;
-  evidenceUrl: string | null;
-  status: ReviewStatus;
-  reviewNote: string | null;
-  awardedPoints: number | null;
-  createdAt: string;
-  isDemo: boolean;
-};
-
-export type Dispute = {
-  id: string;
-  transactionId: string;
-  studentId: string;
-  studentName: string;
-  reason: string;
-  evidenceUrl: string | null;
-  status: ReviewStatus;
-  resolution: "corrected" | "modified" | "rejected" | null;
-  reviewNote: string | null;
-  createdAt: string;
-  transaction: PointTransaction | null;
-  isDemo: boolean;
-};
-
-export type Notification = {
-  id: string;
-  userId: string | "all";
-  title: string;
-  body: string;
-  kind: "points" | "rank" | "achievement" | "event" | "review" | "system";
-  read: boolean;
-  createdAt: string;
-};
-
 export type AuditLog = {
   id: string;
   actorId: string;
@@ -181,8 +136,6 @@ export type Session = {
   userId: string;
   role: Role;
   name: string;
-  studentId: string | null;
-  teamId: string | null;
 };
 
 export type AwardInput = {
@@ -223,7 +176,6 @@ export type StudentDetail = {
   achievements: (Achievement & { unlockedAt: string | null })[];
   transactions: PointTransaction[];
   categoryBreakdown: { categoryId: string; name: string; color: string; points: number }[];
-  registeredEventIds: string[];
 };
 
 export type TxQuery = {

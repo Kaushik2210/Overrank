@@ -34,9 +34,6 @@ async function main() {
   await insertChunks(db, "point_transactions", rows.transactionsFirst);
   await insertChunks(db, "point_transactions", rows.transactionsSecond);
   await insertChunks(db, "student_achievements", rows.studentAchievements);
-  await insertChunks(db, "suggestions", rows.suggestions);
-  await insertChunks(db, "disputes", rows.disputes);
-  await insertChunks(db, "notifications", rows.notifications);
   await insertChunks(db, "audit_logs", rows.audit);
 
   console.log(`Demo data loaded: ${rows.transactionsFirst.length + rows.transactionsSecond.length} transactions, ${rows.events.length} events, ${rows.achievements.length} extra achievements.`);

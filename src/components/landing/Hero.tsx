@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { ArrowRight, LogIn } from "lucide-react";
+import { ArrowRight, Users } from "lucide-react";
 import { GridBackground } from "@/components/background/GridBackground";
 import { ParticleField } from "@/components/background/ParticleField";
 import { AnimatedCounter } from "@/components/gamification/AnimatedCounter";
@@ -17,7 +17,7 @@ const line = (i: number, rm: boolean) => ({
   transition: { duration: 0.6, ease: ease.out, delay: 0.25 + i * 0.12 },
 });
 
-export function Hero({ stats, signedIn }: { stats: Stat[]; signedIn: boolean }) {
+export function Hero({ stats }: { stats: Stat[] }) {
   const rm = useReducedMotionSafe();
   return (
     <section className="noise relative isolate overflow-hidden">
@@ -64,8 +64,8 @@ export function Hero({ stats, signedIn }: { stats: Stat[]; signedIn: boolean }) 
           <Button href="/leaderboard" size="lg">
             VIEW LEADERBOARD <ArrowRight className="size-4" />
           </Button>
-          <Button href={signedIn ? "/dashboard" : "/login"} size="lg" variant="outline">
-            <LogIn className="size-4" /> ENTER DASHBOARD
+          <Button href="/teams" size="lg" variant="outline">
+            <Users className="size-4" /> MEET THE TEAMS
           </Button>
         </motion.div>
 

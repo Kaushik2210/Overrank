@@ -8,7 +8,7 @@ export async function getSupabaseSession(): Promise<Session | null> {
   if (!data.user) return null;
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role, name, student_id, team_id")
+    .select("role, name")
     .eq("id", data.user.id)
     .single();
   if (!profile) return null;
@@ -16,7 +16,5 @@ export async function getSupabaseSession(): Promise<Session | null> {
     userId: data.user.id,
     role: profile.role as Role,
     name: profile.name,
-    studentId: profile.student_id,
-    teamId: profile.team_id,
   };
 }

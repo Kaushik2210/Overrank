@@ -16,12 +16,6 @@ const eventSchema = z.object({
   location: z.string().trim().min(1, "Add a location").max(120),
 });
 
-export async function registerForEventAction(eventId: string) {
-  const r = await run({ limit: ["register", 20, 60_000] }, (s) => getRepo().registerForEvent(s, eventId));
-  revalidatePath("/events");
-  return r;
-}
-
 export async function saveEventAction(input: unknown) {
   const p = eventSchema.safeParse(input);
   if (!p.success) return zodFail(p.error);

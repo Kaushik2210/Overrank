@@ -3,21 +3,23 @@ import Link from "next/link";
 import { AdminHeader, Panel, StatCard } from "@/components/admin/bits";
 import { QuickAward } from "@/components/admin/QuickAward";
 import { TrendChart } from "@/components/charts/LazyCharts";
-import { StatusBadge } from "@/components/feedback/Cards";
+import { StudentAvatar } from "@/components/gamification/StudentAvatar";
 import { LeaderboardView } from "@/components/leaderboard/LeaderboardView";
+import { TransactionCard } from "@/components/points/TransactionCard";
 import { getRepo } from "@/lib/data";
-import { timeAgo } from "@/lib/utils";
+import { formatPoints, timeAgo } from "@/lib/utils";
 
 export default async function AdminDashboard() {
   const repo = getRepo();
-  const [overview, teams, analytics, suggestions, disputes, audit] = await Promise.all([
+  const [overview, teams, students, analytics, ledger, audit] = await Promise.all([
     repo.getOverview(),
     repo.getTeams(),
+    repo.getStudents(),
     repo.getAnalytics(),
-    repo.listSuggestions({ status: "pending" }),
-    repo.listDisputes({ status: "pending" }),
+    repo.listTransactions({ pageSize: 5 }),
     repo.listAudit(8),
   ]);
+  const top = [...students].sort((a, b) => b.points - a.points).slice(0, 5);
 
   return (
     <div className="mx-auto max-w-7xl">
@@ -52,30 +54,29 @@ export default async function AdminDashboard() {
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <Panel title={`Pending suggestions (${suggestions.length})`} action={<Link href="/admin/suggestions" className="text-xs text-accent hover:underline">Review</Link>}>
-          <ul className="divide-y divide-line">
-            {suggestions.length === 0 && <li className="p-6 text-center text-sm text-dim">Queue is clear.</li>}
-            {suggestions.slice(0, 4).map((s) => (
-              <li key={s.id} className="flex items-center gap-3 px-3 py-3">
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">{s.activity}</p>
-                  <p className="text-xs text-faint">{s.studentName} · {s.suggestedPoints} pts</p>
-                </div>
-                <StatusBadge status={s.status} />
-              </li>
+        <Panel title="Latest transactions" action={<Link href="/admin/points" className="text-xs text-accent hover:underline">Open ledger</Link>}>
+          <div className="space-y-2 p-2">
+            {ledger.rows.length === 0 && <p className="p-6 text-center text-sm text-dim">No transactions yet. Award the first points.</p>}
+            {ledger.rows.map((t) => (
+              <TransactionCard key={t.id} tx={t} href={`/transactions/${t.id}`} />
             ))}
-          </ul>
+          </div>
         </Panel>
-        <Panel title={`Pending disputes (${disputes.length})`} action={<Link href="/admin/disputes" className="text-xs text-accent hover:underline">Review</Link>}>
+        <Panel title="Top performers" action={<Link href="/admin/students" className="text-xs text-accent hover:underline">All students</Link>}>
           <ul className="divide-y divide-line">
-            {disputes.length === 0 && <li className="p-6 text-center text-sm text-dim">No open disputes.</li>}
-            {disputes.slice(0, 4).map((d) => (
-              <li key={d.id} className="flex items-center gap-3 px-3 py-3">
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">{d.transaction?.reason ?? "Transaction"}</p>
-                  <p className="truncate text-xs text-faint">{d.studentName} · {d.reason}</p>
-                </div>
-                <StatusBadge status={d.status} />
+            {top.map((s, i) => (
+              <li key={s.id}>
+                <Link href={`/students/${s.id}`} className="flex items-center gap-3 px-3 py-3 hover:bg-surface">
+                  <span className="num w-5 text-center text-sm font-bold text-faint">{i + 1}</span>
+                  <StudentAvatar name={s.name} color={s.teamColor} glow={s.teamGlow} size={36} />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium">{s.name}</p>
+                    <p className="text-xs" style={{ color: s.teamColor }}>
+                      {s.teamName}
+                    </p>
+                  </div>
+                  <span className="num font-semibold">{formatPoints(s.points)}</span>
+                </Link>
               </li>
             ))}
           </ul>
