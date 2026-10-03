@@ -47,6 +47,11 @@ export function Podium({ teams, newLeaderId, leaderGain }: Props) {
             transition={{ ...spring, delay: rm ? 0 : slot.delay }}
             className={cn("group relative list-none", slot.order)}
           >
+            {first && !rm && (
+              <div aria-hidden className="pointer-events-none absolute inset-x-[-20%] -top-44 h-[26rem] overflow-hidden max-md:hidden [mask-image:linear-gradient(to_bottom,#000_10%,transparent)]">
+                <motion.div className="absolute top-0 left-1/2 h-full w-[140%] origin-top -translate-x-1/2" style={{ background: "conic-gradient(from 180deg at 50% 0%, transparent 0deg, color-mix(in srgb, var(--team-primary) 38%, transparent) 14deg, transparent 28deg, transparent 332deg, color-mix(in srgb, var(--team-primary) 38%, transparent) 346deg, transparent 360deg)" }} animate={{ rotate: [-7, 7, -7] }} transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }} />
+              </div>
+            )}
             <Tilt3D max={7}>
             <Link
               href={`/teams/${t.slug}`}
@@ -94,6 +99,11 @@ export function Podium({ teams, newLeaderId, leaderGain }: Props) {
                   className="pointer-events-none absolute inset-0 grid place-items-center bg-bg-0/55"
                 >
                   <div className="text-center">
+                    {!rm &&
+                      Array.from({ length: 18 }, (_, k) => {
+                        const a = (k / 18) * Math.PI * 2;
+                        return <motion.span key={k} className="absolute top-1/2 left-1/2 size-1.5 rounded-full" style={{ background: k % 2 ? "var(--team-glow)" : "#fbbf24" }} initial={{ x: 0, y: 0, opacity: 1, scale: 1 }} animate={{ x: Math.cos(a) * 130, y: Math.sin(a) * 90, opacity: 0, scale: 0.4 }} transition={{ duration: 1.3, ease: "easeOut", delay: 0.1 }} />;
+                      })}
                     <p className="font-display text-sm font-bold tracking-[0.3em] text-warn">NEW LEADER</p>
                     {!!leaderGain && <p className="num mt-1 text-2xl text-success">+{leaderGain}</p>}
                   </div>

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { LeaderboardView } from "@/components/leaderboard/LeaderboardView";
-import { SeasonRace } from "@/components/leaderboard/SeasonRace";
+import { LeaderboardTabs } from "@/components/leaderboard/LeaderboardTabs";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { GridBackground } from "@/components/background/GridBackground";
 import { getRepo } from "@/lib/data";
@@ -10,17 +9,19 @@ export const dynamic = "force-dynamic";
 
 export default async function LeaderboardPage() {
   const repo = getRepo();
-  const [teams, analytics] = await Promise.all([repo.getTeams(), repo.getAnalytics()]);
+  const [teams, students, analytics] = await Promise.all([repo.getTeams(), repo.getStudents(), repo.getAnalytics()]);
+  const started = teams.some((t) => t.points !== 0);
   return (
     <div className="relative">
-      <GridBackground glow={teams[0]?.colorPrimary} />
-      <div className="relative mx-auto max-w-6xl px-4 pt-10 pb-16 sm:px-6 sm:pt-14">
-        <PageHeader eyebrow="Live standings" title="The race for #1" description="Every point counts. Standings update the moment the ledger does." className="mb-10 sm:mb-14" />
-        <LeaderboardView initial={teams} />
-        <section className="mt-16">
-          <h2 className="mb-5 font-display text-2xl font-bold">Season replay</h2>
-          <SeasonRace teams={teams} series={analytics.pointsOverTime} />
-        </section>
+      <GridBackground glow={started ? teams[0]?.colorPrimary : undefined} />
+      <div className="relative mx-auto max-w-6xl px-4 pt-10 pb-20 sm:px-6 sm:pt-14">
+        <PageHeader
+          eyebrow={started ? "Live standings" : "Pre-season"}
+          title={started ? "The race for #1" : "Ready. Set. Rank."}
+          description="Every point counts. Standings update the moment the ledger does."
+          className="mb-10 sm:mb-12"
+        />
+        <LeaderboardTabs teams={teams} students={students} series={analytics.pointsOverTime} />
       </div>
     </div>
   );
