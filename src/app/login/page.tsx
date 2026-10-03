@@ -5,6 +5,7 @@ import { GridBackground } from "@/components/background/GridBackground";
 import { Logo } from "@/components/nav/Logo";
 import { Button } from "@/components/ui/Button";
 import { PreviewSignInForm } from "./PreviewSignInForm";
+import { SupabaseSignInForm } from "./SupabaseSignInForm";
 import { previewSignInAction } from "@/lib/actions/auth";
 import { getSession } from "@/lib/auth";
 import { hasSupabase } from "@/lib/data";
@@ -28,7 +29,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           <p className="mt-1 text-sm text-dim">Sign in with your student ID to see your points, team and badges.</p>
 
           {hasSupabase ? (
-            <p className="mt-6 text-sm text-dim">Sign-in for this deployment is handled by Supabase.</p>
+            <SupabaseSignInForm />
           ) : (
             <>
               <PreviewSignInForm error={sp.error === "id"} />
