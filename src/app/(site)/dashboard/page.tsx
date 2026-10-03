@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { Countdown } from "@/components/events/Countdown";
+import { UnlockWatcher } from "@/components/gamification/UnlockWatcher";
 import { StudentProfileView } from "@/components/profile/StudentProfileView";
 import { requireSession } from "@/lib/auth";
 import { getRepo } from "@/lib/data";
@@ -20,6 +21,7 @@ export default async function DashboardPage() {
 
   return (
     <StudentProfileView detail={detail} totalStudents={students.length} txHref={(id) => `/transactions/${id}`}>
+      <UnlockWatcher studentId={detail.student.id} unlocked={detail.achievements.filter((a) => a.unlockedAt)} />
       <div className="grid gap-4 md:grid-cols-3">
         {next && (
           <div className="glass rounded-lg p-5 md:col-span-1">
