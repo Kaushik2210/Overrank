@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { GridBackground } from "@/components/background/GridBackground";
 import { Logo } from "@/components/nav/Logo";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Field";
 import { AdminLoginForm } from "./AdminLoginForm";
 import { previewSignInAction } from "@/lib/actions/auth";
 import { getSession } from "@/lib/auth";
@@ -12,7 +13,9 @@ import { hasSupabase } from "@/lib/data";
 export const metadata: Metadata = { title: "Faculty sign in", robots: { index: false } };
 export const dynamic = "force-dynamic";
 
-export default async function LoginPage() {
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+  const { error } = await searchParams;
+  const prod = process.env.NODE_ENV === "production";
   if (await getSession()) redirect("/admin");
 
   return (
@@ -31,13 +34,20 @@ export default async function LoginPage() {
           ) : (
             <>
               <div className="mt-6 rounded-md border border-warn/30 bg-warn/10 p-3 text-xs text-warn">
-                Preview mode: no Supabase project is connected, so there is no password. Connect Supabase to turn real authentication on.
+                Preview mode: no Supabase project is connected. Data lives in memory and resets when the server restarts.
               </div>
-              <form action={previewSignInAction} className="mt-4">
-                <Button className="w-full">
-                  <ShieldCheck className="size-4" /> Enter as faculty admin (preview)
-                </Button>
-              </form>
+              {prod && !process.env.PREVIEW_ADMIN_PASSWORD ? (
+                <p role="alert" className="mt-4 text-sm text-danger">Faculty sign-in is switched off on this deployment until a password is configured.</p>
+              ) : (
+                <form action={previewSignInAction} className="mt-4 space-y-3">
+                  {prod && <Input name="password" type="password" autoComplete="current-password" placeholder="Faculty password" aria-label="Faculty password" required />}
+                  {error === "password" && <p role="alert" className="text-sm text-danger">Wrong password.</p>}
+                  {error === "rate" && <p role="alert" className="text-sm text-danger">Too many attempts. Wait a few minutes.</p>}
+                  <Button className="w-full">
+                    <ShieldCheck className="size-4" /> {prod ? "Sign in" : "Enter as faculty admin (preview)"}
+                  </Button>
+                </form>
+              )}
             </>
           )}
         </div>

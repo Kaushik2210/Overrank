@@ -1,5 +1,6 @@
 "use server";
 
+import { timingSafeEqual } from "node:crypto";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -8,8 +9,20 @@ import { hasSupabase } from "@/lib/data";
 import { rateLimit } from "@/lib/rate-limit";
 import { fail, ok, zodFail, type ActionResult } from "./helpers";
 
-/** Preview mode: one button, no password. Disabled as soon as Supabase is configured. */
-export async function previewSignInAction() {
+/**
+ * Preview mode. Locally it is one button with no password. In production (a deployed preview with no
+ * Supabase) it requires PREVIEW_ADMIN_PASSWORD, and refuses entirely if that is not set.
+ */
+export async function previewSignInAction(formData: FormData) {
+  if (process.env.NODE_ENV === "production") {
+    const expected = process.env.PREVIEW_ADMIN_PASSWORD;
+    if (!expected) redirect("/login?error=disabled");
+    if (!rateLimit(`preview-signin:${await clientKey()}`, 8, 10 * 60_000)) redirect("/login?error=rate");
+    const given = String(formData.get("password") ?? "");
+    const a = Buffer.from(given);
+    const b = Buffer.from(expected);
+    if (a.length !== b.length || !timingSafeEqual(a, b)) redirect("/login?error=password");
+  }
   await previewSignIn();
   redirect("/admin");
 }
