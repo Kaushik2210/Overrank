@@ -33,7 +33,7 @@ export function useRealtimeLeaderboard(initial: TeamStanding[], pollMs = 6000) {
         const supabase = createClient();
         const channel = supabase
           .channel("leaderboard")
-          .on("postgres_changes", { event: "*", schema: "public", table: "point_transactions" }, refetch)
+          .on("postgres_changes", { event: "*", schema: "public", table: "rank_events" }, refetch)
           .subscribe();
         cleanup = () => void supabase.removeChannel(channel);
       });
