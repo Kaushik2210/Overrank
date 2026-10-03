@@ -6,6 +6,15 @@ const p = await b.newPage({ viewport: { width: +w, height: +h } });
 const errs = [];
 p.on("console", (m) => m.type() === "error" && errs.push(m.text()));
 p.on("pageerror", (e) => errs.push(String(e)));
+if (process.env.AS) {
+  await p.goto("http://localhost:3100/login", { waitUntil: "networkidle" });
+  if (process.env.AS === "admin") await p.getByRole("button", { name: /faculty admin/i }).click();
+  else {
+    await p.fill('input[name="studentId"]', process.env.AS);
+    await p.getByRole("button", { name: "Sign in", exact: true }).click();
+  }
+  await p.waitForURL(/dashboard|admin/);
+}
 await p.goto("http://localhost:3100/" + path.replace(/^[/]/, ""), { waitUntil: "networkidle" });
 await p.waitForTimeout(1800);
 // scroll through so whileInView reveals fire, then return to top
