@@ -1,3 +1,4 @@
+import { AsyncLocalStorage } from "node:async_hooks";
 import { randomUUID } from "node:crypto";
 import { rankBy } from "@/lib/standings";
 import { levelFromPoints } from "@/lib/xp";
@@ -31,8 +32,12 @@ import type {
 type Globals = { __hc?: Store; __hcRead?: Set<string>; __hcGone?: Set<string> };
 const g = globalThis as unknown as Globals;
 
+/** Lets another repo run the read logic below against a snapshot it loaded from elsewhere (see supabase.ts). */
+const snapshot = new AsyncLocalStorage<Store>();
+export const withSnapshot = <T>(store: Store, fn: () => Promise<T>) => snapshot.run(store, fn);
+
 function S(): Store {
-  return (g.__hc ??= buildStore({ demo: process.env.HOUSECORE_DEMO !== "0" }));
+  return snapshot.getStore() ?? (g.__hc ??= buildStore({ demo: process.env.HOUSECORE_DEMO !== "0" }));
 }
 const readSet = () => (g.__hcRead ??= new Set());
 const goneSet = () => (g.__hcGone ??= new Set());

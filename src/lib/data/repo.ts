@@ -77,7 +77,7 @@ export interface Repo {
   getAnalytics(): Promise<Analytics>;
 
   previewRoster(rows: RosterRow[]): Promise<RosterPreview>;
-  commitRoster(actor: Session, rows: RosterRow[]): Promise<{ added: number; updated: number }>;
+  commitRoster(actor: Session, rows: RosterRow[]): Promise<{ added: number; updated: number; codes?: { studentId: string; name: string; code: string }[] }>;
 
   /** Admin-only overview numbers for the command centre. */
   getOverview(): Promise<{ students: number; teams: number; pointsAwarded: number; activeEvents: number; pendingSuggestions: number; pendingDisputes: number }>;
