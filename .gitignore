@@ -14,3 +14,4 @@ test-results/
 screenshots/
 .DS_Store
 .uploads/
+data/login-codes.csv
