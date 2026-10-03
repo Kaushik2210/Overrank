@@ -17,7 +17,7 @@ export function coreRows(store: Store) {
     categories: store.categories.map((c) => ({ name: c.name, slug: c.slug, icon: c.icon, color: c.color })),
     students: store.students.map((s) => ({ student_id: s.id, name: s.name, team_slug: teamSlug(s.teamId) })),
     achievements: store.achievements.filter((a) => !a.isDemo),
-    events: store.events.filter((e) => !e.isDemo),
+    events: [] as typeof store.events,
   };
 }
 

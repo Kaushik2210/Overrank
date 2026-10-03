@@ -34,7 +34,7 @@ const snapshot = new AsyncLocalStorage<Store>();
 export const withSnapshot = <T>(store: Store, fn: () => Promise<T>) => snapshot.run(store, fn);
 
 function S(): Store {
-  return snapshot.getStore() ?? (g.__hc ??= buildStore({ demo: process.env.OVERRANK_DEMO !== "0" }));
+  return snapshot.getStore() ?? (g.__hc ??= buildStore({ demo: process.env.OVERRANK_DEMO === "1" }));
 }
 
 const DAY = 86400000;

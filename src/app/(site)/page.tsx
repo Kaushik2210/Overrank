@@ -170,6 +170,7 @@ export default async function Landing() {
         </StaggerGroup>
       </Section>
 
+      {upcoming.length > 0 && (
       <Section eyebrow="Upcoming events" title="Next on the calendar" description="Show up, compete, and bring points home." action={<Button href="/events" variant="outline">All events</Button>} tint>
         <StaggerGroup className="grid gap-4 md:grid-cols-3">
           {upcoming.map((e) => (
@@ -179,6 +180,7 @@ export default async function Landing() {
           ))}
         </StaggerGroup>
       </Section>
+      )}
 
       <Section eyebrow="How it works" title="From effort to leaderboard in four steps">
         <StaggerGroup className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

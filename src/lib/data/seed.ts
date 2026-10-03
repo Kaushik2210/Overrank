@@ -76,32 +76,6 @@ const DEMO_ACHIEVEMENTS: DemoAch[] = [
   { id: "ach_d_leader", name: "Born Leader", description: "Earn 50 points in Leadership.", icon: "Crown", rarity: "epic", xp: 180, rule: { kind: "category", categoryId: "cat_leadership", threshold: 50 } },
 ];
 
-/** Placeholder launch events an admin can edit or delete. Not flagged demo. */
-function launchEvents(now: number): EventItem[] {
-  const day = 86400000;
-  const mk = (id: string, title: string, d: number, pts: number, cat: string, catName: string, location: string, description: string): EventItem => ({
-    id,
-    title,
-    description,
-    startsAt: new Date(now + d * day).toISOString(),
-    endsAt: new Date(now + d * day + 3 * 3600000).toISOString(),
-    points: pts,
-    categoryId: cat,
-    categoryName: catName,
-    status: "upcoming",
-    location,
-    teamIds: [],
-    winnerTeamId: null,
-    registeredCount: 0,
-    isDemo: false,
-  });
-  return [
-    mk("evt_opening", "Opening Ceremony", 5, 25, "cat_participation", "Participation", "Main Auditorium", "The season begins. Every student present earns participation points."),
-    mk("evt_quiz", "Inter-House Quiz", 14, 100, "cat_competitions", "Competitions", "Seminar Hall", "A general knowledge quiz. One team of four per house."),
-    mk("evt_hack", "House Hackathon", 30, 200, "cat_hackathons", "Hackathons", "Computer Lab Block", "Twelve hours to build something worth showing."),
-  ];
-}
-
 export function buildStore(opts: { demo: boolean; now?: number } = { demo: false }): Store {
   const now = opts.now ?? Date.now();
   const teams: Team[] = roster.teams.map((t) => ({
@@ -121,7 +95,7 @@ export function buildStore(opts: { demo: boolean; now?: number } = { demo: false
     students,
     categories: CATEGORIES.map((c) => ({ ...c })),
     transactions: [],
-    events: launchEvents(now),
+    events: [],
     achievements: CORE_ACHIEVEMENTS.map((a) => ({ ...a })),
     studentAchievements: [],
     audit: [],

@@ -1,7 +1,7 @@
 /**
  * npm run seed
- * Idempotent. Creates the teams, categories, students (from data/roster.json), core achievements, launch
- * events and one faculty admin account. Students do not sign in, so no student accounts are created.
+ * Idempotent. Creates the teams, categories, students (from data/roster.json), core achievements, 
+ * and one faculty admin account. Students do not sign in, so no student accounts are created.
  * Real students start at 0 points. Re-running never overwrites edits made in the admin area.
  */
 import { randomBytes } from "node:crypto";
@@ -35,16 +35,6 @@ async function main() {
     must(
       await db.from("achievements").insert(newAch.map((a) => ({ name: a.name, description: a.description, icon: a.icon, rarity: a.rarity, xp: a.xp, rule: resolveRule(a.rule, cats) }))),
       "achievements",
-    );
-  }
-
-  const { count } = await db.from("events").select("id", { count: "exact", head: true }).eq("is_demo", false);
-  if (!count) {
-    must(
-      await db.from("events").insert(
-        rows.events.map((e) => ({ title: e.title, description: e.description, starts_at: e.startsAt, ends_at: e.endsAt, points: e.points, category_id: cats.get(e.categoryId.replace(/^cat_/, "")), location: e.location })),
-      ),
-      "events",
     );
   }
 
