@@ -50,6 +50,16 @@ describe("ledger is append-only", () => {
     });
   });
 
+  it("lets only flagged demo rows be deleted", async () => {
+    await award(25);
+    await db.exec(`insert into point_transactions (student_id, team_id, amount, category_id, reason, is_demo) values ('2647101','${s.teamA}', 10, '${s.sports}', 'demo', true)`);
+    await as(db, "service_role", async () => {
+      await db.exec("delete from point_transactions where is_demo");
+      expect(await expectDenied(db.exec("delete from point_transactions"))).toMatch(/cannot be deleted/);
+    });
+    expect((await db.query("select * from point_transactions")).rows).toHaveLength(1);
+  });
+
   it("forces the team to match the student", async () => {
     await db.exec(`insert into point_transactions (student_id, team_id, amount, category_id, reason) values ('2647101','${s.teamB}', 5, '${s.sports}', 'wrong team')`);
     const r = await db.query<{ team_id: string }>("select team_id from point_transactions limit 1");

@@ -110,6 +110,7 @@ create table public.student_achievements (
   achievement_id uuid not null references public.achievements (id) on delete cascade,
   student_id text not null references public.students (student_id) on update cascade on delete cascade,
   unlocked_at timestamptz not null default now(),
+  is_demo boolean not null default false,
   primary key (achievement_id, student_id)
 );
 
@@ -171,6 +172,7 @@ create table public.audit_logs (
   action text not null,
   target text not null default '',
   detail text not null default '',
+  is_demo boolean not null default false,
   created_at timestamptz not null default now()
 );
 create index audit_created_idx on public.audit_logs (created_at desc);
@@ -220,6 +222,8 @@ create or replace function public.tx_append_only() returns trigger
 language plpgsql as $$
 begin
   if tg_op = 'DELETE' then
+    -- only flagged demo rows may ever be removed (seed:demo:clear); real history is permanent
+    if old.is_demo then return old; end if;
     raise exception 'point_transactions rows cannot be deleted';
   end if;
   if (new.id, new.student_id, new.team_id, new.amount, new.category_id, new.reason, new.created_at)
