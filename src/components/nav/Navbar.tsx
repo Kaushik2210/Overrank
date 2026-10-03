@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "motion/react";
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -18,6 +18,12 @@ import { spring } from "@/lib/motion";
 export function Navbar({ session, bell }: { session: NavSession; bell?: React.ReactNode }) {
   const path = usePathname();
   const [open, setOpen] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const { scrollY } = useScroll();
+  useMotionValueEvent(scrollY, "change", (y) => {
+    const prev = scrollY.getPrevious() ?? 0;
+    setHidden(y > prev && y > 160 && !open);
+  });
   const links = [...PRIMARY_NAV, ...MORE_NAV];
 
   const [lastPath, setLastPath] = useState(path);
@@ -27,7 +33,7 @@ export function Navbar({ session, bell }: { session: NavSession; bell?: React.Re
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-bg-0/70 backdrop-blur-xl max-md:backdrop-blur-none max-md:bg-bg-0/90">
+    <motion.header animate={{ y: hidden ? "-100%" : "0%" }} transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }} className="sticky top-0 z-40 border-b border-line bg-bg-0/70 backdrop-blur-xl max-md:backdrop-blur-none max-md:bg-bg-0/90">
       <div className="mx-auto flex h-[var(--nav-h)] max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
         <motion.div initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1, duration: 0.4 }}>
           <Logo />
@@ -90,6 +96,6 @@ export function Navbar({ session, bell }: { session: NavSession; bell?: React.Re
           </motion.nav>
         )}
       </AnimatePresence>
-    </header>
+    </motion.header>
   );
 }

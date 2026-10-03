@@ -1,3 +1,4 @@
+import { SplitText } from "@/components/fx/SplitText";
 import { Reveal } from "@/components/ui/Reveal";
 import { cn } from "@/lib/utils";
 
@@ -20,7 +21,7 @@ export function Section({ id, eyebrow, title, description, action, children, cla
         <Reveal className="mb-10 flex flex-wrap items-end justify-between gap-4">
           <div className="max-w-2xl">
             <p className="num text-xs tracking-[0.28em] text-accent uppercase">{eyebrow}</p>
-            <h2 className="mt-3 font-display text-3xl leading-tight font-bold sm:text-4xl">{title}</h2>
+            <h2 className="mt-3 font-display text-3xl leading-tight font-bold sm:text-5xl"><SplitText text={title} /></h2>
             {description && <p className="mt-3 text-dim">{description}</p>}
           </div>
           {action}

@@ -3,9 +3,11 @@ import Link from "next/link";
 import { EventCard } from "@/components/events/EventCard";
 import { AchievementBadge, RARITY } from "@/components/gamification/AchievementBadge";
 import { StudentAvatar } from "@/components/gamification/StudentAvatar";
+import { Marquee } from "@/components/fx/Marquee";
 import { Hero } from "@/components/landing/Hero";
 import { Section } from "@/components/landing/Section";
 import { LeaderboardView } from "@/components/leaderboard/LeaderboardView";
+import { SeasonRace } from "@/components/leaderboard/SeasonRace";
 import { TeamLogo } from "@/components/leaderboard/TeamLogo";
 import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
@@ -26,13 +28,15 @@ const STEPS = [
 
 export default async function Landing() {
   const repo = getRepo();
-  const [teams, students, categories, events, achievements, overview] = await Promise.all([
+  const [teams, students, categories, events, achievements, overview, analytics, latest] = await Promise.all([
     repo.getTeams(),
     repo.getStudents(),
     repo.getCategories(),
     repo.listEvents(),
     repo.listAchievements(),
     repo.getOverview(),
+    repo.getAnalytics(),
+    repo.listTransactions({ pageSize: 12 }),
   ]);
   const performers = [...students].sort((a, b) => b.points - a.points).slice(0, 5);
   const upcoming = events.filter((e) => e.status !== "past").slice(0, 3);
@@ -49,6 +53,21 @@ export default async function Landing() {
         ]}
       />
 
+      {latest.rows.length > 0 && (
+        <div className="border-y border-line bg-bg-1/80 py-3.5" aria-label="Latest results">
+          <Marquee speed={55}>
+            {latest.rows.map((t) => (
+              <span key={t.id} className="num inline-flex items-center gap-2 text-sm whitespace-nowrap">
+                <span className="size-2 rounded-full" style={{ background: t.teamColor }} aria-hidden />
+                <span className={t.amount >= 0 ? "font-semibold text-success" : "font-semibold text-danger"}>{t.amount > 0 ? "+" : ""}{t.amount}</span>
+                <span className="text-ink">{t.studentName}</span>
+                <span className="text-faint">{t.categoryName}</span>
+              </span>
+            ))}
+          </Marquee>
+        </div>
+      )}
+
       <Section
         eyebrow="Live leaderboard"
         title="Who is on top right now"
@@ -59,6 +78,10 @@ export default async function Landing() {
         }
       >
         <LeaderboardView initial={teams} live={false} />
+      </Section>
+
+      <Section eyebrow="Season replay" title="Watch the race unfold" description="Press play, or drag the slider to scrub week by week and see who overtook whom.">
+        <SeasonRace teams={teams} series={analytics.pointsOverTime} />
       </Section>
 
       <Section

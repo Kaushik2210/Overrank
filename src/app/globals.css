@@ -175,3 +175,17 @@ html[data-motion="reduce"] *, html[data-motion="reduce"] *::before, html[data-mo
 .floor-run { animation: floor-run 2.4s linear infinite; }
 @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
 .bob { animation: bob 5s ease-in-out infinite; }
+
+/* ---- marquee + shine ---- */
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-100%); } }
+.marquee-track { animation: marquee 40s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .marquee-track { animation: none; } }
+html[data-motion="reduce"] .marquee-track { animation: none; }
+
+@keyframes aurora { 0%, 100% { transform: translate3d(0, 0, 0) scale(1); } 50% { transform: translate3d(4%, -3%, 0) scale(1.08); } }
+.aurora { animation: aurora 18s ease-in-out infinite; }
+
+/* button shine sweep */
+.shine { position: relative; overflow: hidden; }
+.shine::after { content: ""; position: absolute; inset: 0; transform: translateX(-120%) skewX(-18deg); background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.45), transparent); transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1); pointer-events: none; }
+.shine:hover::after { transform: translateX(120%) skewX(-18deg); }

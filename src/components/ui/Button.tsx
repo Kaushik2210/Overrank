@@ -40,7 +40,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   ref,
 ) {
   const cls = cn(
-    "relative inline-flex select-none items-center justify-center rounded-md whitespace-nowrap transition-colors duration-150 disabled:pointer-events-none disabled:opacity-50",
+    "shine relative inline-flex select-none items-center justify-center rounded-md whitespace-nowrap transition-[colors,box-shadow] duration-150 disabled:pointer-events-none disabled:opacity-50",
     variants[variant],
     sizes[size],
     className,
