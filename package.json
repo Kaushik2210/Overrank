@@ -13,7 +13,8 @@
     "seed": "tsx scripts/seed.ts",
     "seed:demo": "tsx scripts/seed-demo.ts",
     "seed:demo:clear": "tsx scripts/seed-demo-clear.ts",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "dev:preview": "node scripts/dev-preview.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
