@@ -194,7 +194,7 @@ export function RosterPanel() {
                 const csv = ["studentId,name,code", ...codes.map((c) => `${c.studentId},"${c.name.replace(/"/g, '""')}",${c.code}`)].join("\n");
                 const a = document.createElement("a");
                 a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
-                a.download = "housecore-login-codes.csv";
+                a.download = "overrank-login-codes.csv";
                 a.click();
                 URL.revokeObjectURL(a.href);
                 setCodes([]);

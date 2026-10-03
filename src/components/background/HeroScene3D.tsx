@@ -35,7 +35,7 @@ export function HeroScene3D() {
     { z: -90, fill: "rgb(212 255 58 / 0.06)", stroke: "rgb(212 255 58 / 0.35)", label: "" },
     { z: -30, fill: "rgb(212 255 58 / 0.10)", stroke: "rgb(212 255 58 / 0.6)", label: "" },
     { z: 30, fill: "rgb(212 255 58 / 0.16)", stroke: "#d4ff3a", label: "" },
-    { z: 90, fill: "#d4ff3a", stroke: "#f5ff9e", label: "HC" },
+    { z: 90, fill: "#d4ff3a", stroke: "#f5ff9e", label: "OR" },
   ];
 
   return (

@@ -127,7 +127,7 @@ export function buildStore(opts: { demo: boolean; now?: number } = { demo: false
     audit: [],
     settings: {
       xp: { ...DEFAULT_XP, thresholds: [...DEFAULT_XP.thresholds] },
-      siteName: "HOUSECORE",
+      siteName: "OVERRANK",
       tagline: "EVERY POINT COUNTS.",
     },
     demoLoaded: false,

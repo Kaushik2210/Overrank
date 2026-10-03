@@ -17,7 +17,7 @@ export default async function AboutPage() {
   const xp = settings.xp;
   return (
     <div className="mx-auto max-w-4xl px-4 pt-10 pb-16 sm:px-6 sm:pt-14">
-      <PageHeader eyebrow="About" title="How HOUSECORE works" description="A season-long competition between houses. Here is the short version of the rules." className="mb-12" />
+      <PageHeader eyebrow="About" title="How OVERRANK works" description="A season-long competition between houses. Here is the short version of the rules." className="mb-12" />
       <div className="grid gap-4 sm:grid-cols-2">
         {RULES.map(([t, d], i) => (
           <Reveal key={t} delay={i * 0.05} className="glass rounded-lg p-6">

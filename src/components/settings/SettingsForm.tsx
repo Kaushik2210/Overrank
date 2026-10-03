@@ -47,7 +47,7 @@ export function SettingsForm() {
           ))}
         </div>
       </section>
-      <p className="text-xs text-faint">HOUSECORE is designed dark-first. These preferences are saved in this browser only.</p>
+      <p className="text-xs text-faint">OVERRANK is designed dark-first. These preferences are saved in this browser only.</p>
     </div>
   );
 }

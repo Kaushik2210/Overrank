@@ -113,7 +113,7 @@ async function loadSnapshot(): Promise<Store> {
     audit: (audit as Row[]).map((a) => ({ id: a.id, actorId: a.actor_id ?? "", actorName: a.actor_name, action: a.action, target: a.target, detail: a.detail, createdAt: a.created_at })),
     settings: {
       xp: { ...DEFAULT_XP, ...(setting("xp") ?? {}) },
-      siteName: setting("site")?.siteName ?? "HOUSECORE",
+      siteName: setting("site")?.siteName ?? "OVERRANK",
       tagline: setting("site")?.tagline ?? "EVERY POINT COUNTS.",
     },
     demoLoaded: false,

@@ -1,4 +1,4 @@
--- HOUSECORE schema.
+-- OVERRANK schema.
 -- Point totals are never stored: they are derived from the append-only point_transactions ledger.
 
 create type public.app_role as enum ('teacher', 'admin');
@@ -185,4 +185,4 @@ create view public.team_points as
 
 insert into public.settings (key, value) values
   ('xp', '{"xpPerPoint": 1, "thresholds": [100, 250, 450, 700, 1000, 1400, 1900, 2500, 3200, 4000]}'),
-  ('site', '{"siteName": "HOUSECORE", "tagline": "EVERY POINT COUNTS."}');
+  ('site', '{"siteName": "OVERRANK", "tagline": "EVERY POINT COUNTS."}');

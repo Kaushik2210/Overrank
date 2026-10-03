@@ -3,7 +3,7 @@ import { AdminShell } from "@/components/admin/AdminShell";
 import { requireStaff } from "@/lib/auth";
 import { getRepo } from "@/lib/data";
 
-export const metadata: Metadata = { title: { default: "Command center", template: "%s | HOUSECORE Admin" }, robots: { index: false } };
+export const metadata: Metadata = { title: { default: "Command center", template: "%s | OVERRANK Admin" }, robots: { index: false } };
 export const dynamic = "force-dynamic";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {

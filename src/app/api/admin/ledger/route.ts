@@ -31,6 +31,6 @@ export async function GET(req: Request) {
     ...rows.map((t) => [new Date(t.createdAt).toISOString(), t.studentId, t.studentName, t.teamName, t.categoryName, t.amount, t.reason, t.eventTitle ?? "", t.awardedBy, t.status].map(cell).join(",")),
   ];
   return new NextResponse(lines.join("\r\n"), {
-    headers: { "Content-Type": "text/csv; charset=utf-8", "Content-Disposition": `attachment; filename="housecore-ledger-${new Date().toISOString().slice(0, 10)}.csv"` },
+    headers: { "Content-Type": "text/csv; charset=utf-8", "Content-Disposition": `attachment; filename="overrank-ledger-${new Date().toISOString().slice(0, 10)}.csv"` },
   });
 }

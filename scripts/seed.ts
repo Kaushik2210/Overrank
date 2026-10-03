@@ -49,7 +49,7 @@ async function main() {
   }
 
   // admin account
-  const adminEmail = (process.env.ADMIN_EMAIL ?? "admin@housecore.local").toLowerCase();
+  const adminEmail = (process.env.ADMIN_EMAIL ?? "admin@overrank.local").toLowerCase();
   let adminPassword = process.env.ADMIN_PASSWORD;
   const { data: list } = await db.auth.admin.listUsers({ page: 1, perPage: 1000 });
   const existingAdmin = list?.users.find((u) => u.email?.toLowerCase() === adminEmail);

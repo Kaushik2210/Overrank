@@ -1,4 +1,4 @@
-# HOUSECORE
+# OVERRANK
 
 A campus house competition platform. Teams earn points, the leaderboard updates live, and faculty manage everything.
 Students do not sign in: the leaderboard, team pages, events, achievements and player profiles are public and read-only.
@@ -11,7 +11,7 @@ npm install
 npm run dev          # http://localhost:3000
 ```
 
-With no Supabase variables set, the app runs in **preview mode**: an in-memory season built from `data/roster.json` plus flagged demo activity (set `HOUSECORE_DEMO=0` for an empty season). Sign in with the faculty button on `/login`. Preview mode has no password and is for local use only.
+With no Supabase variables set, the app runs in **preview mode**: an in-memory season built from `data/roster.json` plus flagged demo activity (set `OVERRANK_DEMO=0` for an empty season). Sign in with the faculty button on `/login`. Preview mode has no password and is for local use only.
 
 ## Use Supabase
 

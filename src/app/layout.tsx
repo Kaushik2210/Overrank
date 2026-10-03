@@ -13,10 +13,10 @@ const mono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: { default: "HOUSECORE | Every point counts", template: "%s | HOUSECORE" },
-  description: "The campus house competition. Earn points, climb the leaderboard, represent your team.",
+  title: { default: "OVERRANK | Every point counts", template: "%s | OVERRANK" },
+  description: "OVERRANK is the campus house competition. Earn points, climb the leaderboard, outrank every other team.",
   openGraph: {
-    title: "HOUSECORE",
+    title: "OVERRANK",
     description: "Every point counts.",
     type: "website",
   },
