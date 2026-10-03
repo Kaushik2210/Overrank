@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/Button";
@@ -45,6 +46,9 @@ export function AdminLoginForm() {
       <Button loading={pending} className="w-full">
         Sign in
       </Button>
+      <Link href="/forgot-password" className="block h-11 text-center text-sm leading-[2.75rem] text-accent hover:underline">
+        Forgot your password?
+      </Link>
     </form>
   );
 }

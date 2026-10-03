@@ -20,3 +20,7 @@ data/login-codes.csv
 CLAUDE.md
 AGENTS.md
 .claude/
+
+.vercel
+.env*
+payload.json

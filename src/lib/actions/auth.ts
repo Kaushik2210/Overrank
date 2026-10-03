@@ -62,3 +62,56 @@ export async function signInAction(input: unknown): Promise<ActionResult> {
   if (error) return fail("That email and password do not match.");
   return ok(undefined);
 }
+
+/* ------------------------------------------------------------ forgot / reset password */
+
+async function siteOrigin() {
+  const fixed = process.env.NEXT_PUBLIC_SITE_URL;
+  if (fixed) return fixed.replace(/\/$/, "");
+  const h = await headers();
+  const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000";
+  const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
+  return `${proto}://${host}`;
+}
+
+const emailSchema = z.object({ email: z.string().trim().toLowerCase().email("Enter a valid email address").max(120) });
+
+/**
+ * Sends a reset link. The answer is always the same whether or not the address has an account,
+ * so the form cannot be used to find out who the faculty accounts are.
+ */
+export async function requestPasswordResetAction(input: unknown): Promise<ActionResult> {
+  if (!hasSupabase) return fail("Password reset needs Supabase to be configured");
+  const p = emailSchema.safeParse(input);
+  if (!p.success) return zodFail(p.error);
+  if (!rateLimit(`reset-ip:${await clientKey()}`, 5, 15 * 60_000) || !rateLimit(`reset-email:${p.data.email}`, 3, 60 * 60_000)) {
+    return fail("Too many requests. Wait a while and try again.");
+  }
+  const { createServerSupabase } = await import("@/lib/supabase/server");
+  const supabase = await createServerSupabase();
+  const { error } = await supabase.auth.resetPasswordForEmail(p.data.email, { redirectTo: `${await siteOrigin()}/auth/callback?next=/reset-password` });
+  if (error) console.error("[reset]", error.message);
+  return ok(undefined);
+}
+
+const newPasswordSchema = z
+  .object({
+    password: z.string().min(10, "Use at least 10 characters").max(200),
+    confirm: z.string(),
+  })
+  .refine((v) => v.password === v.confirm, { message: "The passwords do not match", path: ["confirm"] });
+
+/** Sets a new password for the person who just proved they own the email (the recovery link created this session). */
+export async function updatePasswordAction(input: unknown): Promise<ActionResult> {
+  if (!hasSupabase) return fail("Password reset needs Supabase to be configured");
+  const p = newPasswordSchema.safeParse(input);
+  if (!p.success) return zodFail(p.error);
+  const { createServerSupabase } = await import("@/lib/supabase/server");
+  const supabase = await createServerSupabase();
+  const { data } = await supabase.auth.getUser();
+  if (!data.user) return fail("This reset link has expired. Request a new one.");
+  const { error } = await supabase.auth.updateUser({ password: p.data.password });
+  if (error) return fail(error.message.toLowerCase().includes("same") ? "Choose a password you have not used before." : "Could not update the password. Try again.");
+  await supabase.auth.signOut({ scope: "others" }); // end any other sessions that knew the old password
+  return ok(undefined);
+}
