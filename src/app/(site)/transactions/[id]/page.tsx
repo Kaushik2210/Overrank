@@ -3,7 +3,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { TransactionDetail } from "@/components/points/TransactionDetail";
+import { ReverseButton } from "@/components/points/ReverseButton";
 import { Button } from "@/components/ui/Button";
+import { evidenceHref } from "@/lib/storage";
 import { requireSession } from "@/lib/auth";
 import { getRepo } from "@/lib/data";
 
@@ -23,7 +25,12 @@ export default async function TransactionPage({ params }: { params: Promise<{ id
         &larr; Back
       </Link>
       <h1 className="mt-4 mb-8 font-display text-3xl font-bold sm:text-4xl">Transaction detail</h1>
-      <TransactionDetail tx={tx} evidenceHref={tx.evidenceUrl} />
+      <TransactionDetail tx={tx} evidenceHref={await evidenceHref(tx.evidenceUrl)} />
+      {session.role !== "student" && tx.status === "active" && !tx.reversesId && (
+        <div className="mt-6">
+          <ReverseButton id={tx.id} label={`${tx.studentName}: ${tx.reason} (${tx.amount > 0 ? "+" : ""}${tx.amount})`} />
+        </div>
+      )}
       {session.role === "student" && tx.status === "active" && !tx.reversesId && (
         <div className="mt-6">
           <Button href={`/disputes?tx=${tx.id}`} variant="outline">
