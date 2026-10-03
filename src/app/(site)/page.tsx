@@ -173,7 +173,7 @@ export default async function Landing() {
       </Section>
 
       <section className="relative overflow-hidden border-t border-line py-20 sm:py-28">
-        <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_100%,rgb(110_231_249/0.18),transparent_60%)]" />
+        <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_100%,rgb(212_255_58/0.14),transparent_60%)]" />
         <Reveal className="relative mx-auto max-w-3xl px-4 text-center sm:px-6">
           <h2 className="font-display text-4xl leading-tight font-bold sm:text-6xl">COMPETE. CONTRIBUTE. CLIMB.</h2>
           <p className="mt-4 text-lg text-dim">Your house is counting on you.</p>

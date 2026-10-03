@@ -14,7 +14,7 @@
   --text: #e8ecf5;
   --text-dim: #9aa4bb;
   --text-faint: #6b768f;
-  --accent: #6ee7f9;
+  --accent: #d4ff3a;
   --danger: #f87171;
   --success: #4ade80;
   --warn: #fbbf24;
@@ -92,6 +92,7 @@ h1, h2, h3, h4 {
   font-family: var(--font-display), system-ui, sans-serif;
   letter-spacing: -0.02em;
 }
+h1, h2 { text-transform: uppercase; letter-spacing: -0.015em; }
 
 .num {
   font-family: var(--font-mono), ui-monospace, monospace;
@@ -99,7 +100,7 @@ h1, h2, h3, h4 {
   letter-spacing: -0.02em;
 }
 
-::selection { background: rgb(110 231 249 / 0.3); }
+::selection { background: rgb(212 255 58 / 0.35); color: #05070d; }
 
 :focus-visible {
   outline: 2px solid var(--accent);
@@ -107,16 +108,19 @@ h1, h2, h3, h4 {
   border-radius: 4px;
 }
 
-/* glass surface used by cards, nav, modals */
+/* Panel surface used by cards, nav menus and modals: solid, hard-edged, with HUD corner brackets.
+   Brackets are drawn with background layers so the element needs no extra positioning. */
 .glass {
-  background: linear-gradient(180deg, var(--surface-2), var(--surface));
+  --tick: color-mix(in srgb, var(--accent) 70%, transparent);
+  background:
+    linear-gradient(var(--tick), var(--tick)) top left / 12px 2px no-repeat,
+    linear-gradient(var(--tick), var(--tick)) top left / 2px 12px no-repeat,
+    linear-gradient(var(--tick), var(--tick)) bottom right / 12px 2px no-repeat,
+    linear-gradient(var(--tick), var(--tick)) bottom right / 2px 12px no-repeat,
+    linear-gradient(180deg, #111832 0%, #0b1020 100%);
   border: 1px solid var(--border);
-  box-shadow: var(--shadow-1);
-  backdrop-filter: blur(14px);
-}
-
-@media (hover: none) {
-  .glass { backdrop-filter: none; background: var(--bg-2); }
+  border-radius: 6px;
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.06) inset, 6px 8px 0 -2px rgb(0 0 0 / 0.55);
 }
 
 /* team-coloured glow border */
@@ -163,3 +167,11 @@ html[data-motion="reduce"] *, html[data-motion="reduce"] *::before, html[data-mo
   to { transform: translateX(100%); }
 }
 .skeleton-sheen { animation: sheen 1.6s ease-in-out infinite; }
+
+/* ---- 3D scene helpers ---- */
+.scene { perspective: 1000px; transform-style: preserve-3d; }
+.preserve-3d { transform-style: preserve-3d; }
+@keyframes floor-run { to { transform: translateY(56px); } }
+.floor-run { animation: floor-run 2.4s linear infinite; }
+@keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+.bob { animation: bob 5s ease-in-out infinite; }

@@ -44,7 +44,7 @@ export function Field({ label, error, hint, children, className }: FieldProps) {
 }
 
 const control =
-  "w-full rounded-md border bg-bg-2/80 px-3.5 text-sm text-ink placeholder:text-faint transition-[border-color,box-shadow] duration-150 focus:outline-none focus:border-accent focus:shadow-[0_0_0_3px_rgb(110_231_249/0.18)] disabled:opacity-50";
+  "w-full rounded-md border bg-bg-2/80 px-3.5 text-sm text-ink placeholder:text-faint transition-[border-color,box-shadow] duration-150 focus:outline-none focus:border-accent focus:shadow-[0_0_0_3px_rgb(212_255_58/0.2)] disabled:opacity-50";
 
 export const Input = forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement> & { invalid?: boolean }>(function Input(
   { className, invalid, ...p },

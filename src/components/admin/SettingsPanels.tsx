@@ -76,7 +76,7 @@ export function TeamsPanel({ teams }: { teams: Team[] }) {
 export function CategoriesPanel({ categories }: { categories: Category[] }) {
   const [name, setName] = useState("");
   const [icon, setIcon] = useState("Shapes");
-  const [color, setColor] = useState("#6ee7f9");
+  const [color, setColor] = useState("#d4ff3a");
   const [err, setErr] = useState<string>();
   const [pending, start] = useTransition();
   const saved = useSave();

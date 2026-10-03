@@ -7,7 +7,7 @@ import { useIsTouch } from "@/hooks/useMediaQuery";
 type P = { x: number; y: number; vx: number; vy: number; r: number; a: number };
 
 /** Small canvas particle field. Capped count, paused off-screen, reacts to the mouse on desktop only. */
-export function ParticleField({ color = "110,231,249" }: { color?: string }) {
+export function ParticleField({ color = "212,255,58" }: { color?: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
   const rm = useReducedMotionSafe();
   const touch = useIsTouch();

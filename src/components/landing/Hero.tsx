@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import { ArrowRight, Users } from "lucide-react";
 import { GridBackground } from "@/components/background/GridBackground";
+import { HeroScene3D } from "@/components/background/HeroScene3D";
 import { ParticleField } from "@/components/background/ParticleField";
 import { AnimatedCounter } from "@/components/gamification/AnimatedCounter";
 import { Button } from "@/components/ui/Button";
@@ -22,6 +23,7 @@ export function Hero({ stats }: { stats: Stat[] }) {
   return (
     <section className="noise relative isolate overflow-hidden">
       <GridBackground />
+      <HeroScene3D />
       <ParticleField />
       {/* scanline */}
       <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.07] [background:repeating-linear-gradient(0deg,transparent_0_3px,#fff_3px_4px)]" />
@@ -39,7 +41,7 @@ export function Hero({ stats }: { stats: Stat[] }) {
         <h1 className="mt-6 font-display text-[2.6rem] leading-[0.98] font-bold tracking-tight sm:text-7xl lg:text-[5.5rem]">
           {["THE CAMPUS", "COMPETITION", "HAS BEGUN."].map((t, i) => (
             <span key={t} className="block overflow-hidden pb-1">
-              <motion.span {...line(i, rm)} className={i === 2 ? "block bg-gradient-to-r from-accent to-indigo-400 bg-clip-text text-transparent" : "block"}>
+              <motion.span {...line(i, rm)} className={i === 2 ? "block text-accent [text-shadow:4px_4px_0_rgb(0_0_0/0.6)]" : "block"}>
                 {t}
               </motion.span>
             </span>

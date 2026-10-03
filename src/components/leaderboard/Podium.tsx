@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { Crown, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { AnimatedCounter } from "@/components/gamification/AnimatedCounter";
+import { Tilt3D } from "@/components/ui/Tilt3D";
 import { RankDelta } from "./RankDelta";
 import { TeamLogo } from "./TeamLogo";
 import { spring } from "@/lib/motion";
@@ -46,6 +47,7 @@ export function Podium({ teams, newLeaderId, leaderGain }: Props) {
             transition={{ ...spring, delay: rm ? 0 : slot.delay }}
             className={cn("group relative list-none", slot.order)}
           >
+            <Tilt3D max={7}>
             <Link
               href={`/teams/${t.slug}`}
               className={cn(
@@ -63,7 +65,7 @@ export function Podium({ teams, newLeaderId, leaderGain }: Props) {
               </div>
 
               <div className="relative mt-2 flex flex-col items-center max-md:flex-row max-md:gap-4 max-md:text-left">
-                <TeamLogo name={t.name} slug={t.slug} color={t.colorPrimary} glow={t.colorGlow} size={slot.logo} />
+                <span className="[transform:translateZ(46px)]"><TeamLogo name={t.name} slug={t.slug} color={t.colorPrimary} glow={t.colorGlow} size={slot.logo} /></span>
                 <div className="max-md:flex-1 md:mt-3">
                   <h3 className={cn("font-display font-bold", first ? "text-2xl md:text-3xl" : "text-xl md:text-2xl")}>{t.name}</h3>
                   <p className="mt-0.5 hidden text-xs text-faint md:block">{t.motto}</p>
@@ -98,6 +100,7 @@ export function Podium({ teams, newLeaderId, leaderGain }: Props) {
                 </motion.div>
               )}
             </Link>
+            </Tilt3D>
 
             {/* pedestal, hidden on phones */}
             <motion.div
@@ -105,10 +108,14 @@ export function Podium({ teams, newLeaderId, leaderGain }: Props) {
               initial={rm ? { opacity: 0 } : { scaleY: 0 }}
               animate={rm ? { opacity: 1 } : { scaleY: 1 }}
               transition={{ ...spring, delay: rm ? 0 : slot.delay + 0.1 }}
-              className={cn("relative mx-3 mt-0 hidden origin-bottom rounded-b-lg border border-t-0 border-line md:grid md:place-items-center", slot.pedestal)}
-              style={{ background: "linear-gradient(180deg, color-mix(in srgb, var(--team-primary) 28%, transparent), transparent)" }}
+              className={cn("relative mx-3 hidden origin-bottom md:block", slot.pedestal)}
             >
-              <span className="num text-4xl font-bold opacity-20">{t.rank}</span>
+              {/* top face, tipped back for depth */}
+              <div className="absolute inset-x-0 -top-3 h-3 origin-bottom [transform:perspective(160px)_rotateX(52deg)]" style={{ background: "color-mix(in srgb, var(--team-glow) 55%, #fff 0%)" }} />
+              {/* front face */}
+              <div className="grid size-full place-items-center border border-t-0 border-white/10" style={{ background: "linear-gradient(180deg, color-mix(in srgb, var(--team-primary) 55%, #05070d), color-mix(in srgb, var(--team-primary) 18%, #05070d))", boxShadow: "8px 10px 0 -2px rgb(0 0 0 / 0.5)" }}>
+                <span className="num text-5xl font-bold text-black/40">{t.rank}</span>
+              </div>
             </motion.div>
           </motion.li>
         );

@@ -22,7 +22,7 @@ export function EventCard({ event: e, teams, action, className }: Props) {
   const winner = teams.find((t) => t.id === e.winnerTeamId);
   const participating = teams.filter((t) => e.teamIds.includes(t.id));
   return (
-    <article className={cn("glass group relative flex h-full flex-col rounded-lg p-5 transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_-20px_rgb(110_231_249/0.35)]", className)}>
+    <article className={cn("glass group relative flex h-full flex-col rounded-lg p-5 transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_-20px_rgb(212_255_58/0.3)]", className)}>
       <div className="flex items-start justify-between gap-3">
         <span className={cn("num inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] tracking-wider uppercase", status[e.status])}>
           {e.status === "live" && <span className="size-1.5 animate-pulse rounded-full bg-current" aria-hidden />}

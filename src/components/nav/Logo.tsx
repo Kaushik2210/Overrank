@@ -7,13 +7,13 @@ export function LogoMark({ size = 32, className }: { size?: number; className?: 
     <svg width={size} height={size} viewBox="0 0 40 40" aria-hidden className={className}>
       <defs>
         <linearGradient id="lm" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#6ee7f9" />
-          <stop offset="1" stopColor="#818cf8" />
+          <stop offset="0" stopColor="#d4ff3a" />
+          <stop offset="1" stopColor="#f5ff9e" />
         </linearGradient>
       </defs>
       <path d="M20 2 36 11v18L20 38 4 29V11z" fill="none" stroke="url(#lm)" strokeWidth="2.2" strokeLinejoin="round" />
       <path d="M12.5 25 20 18l7.5 7" fill="none" stroke="url(#lm)" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="20" cy="11.5" r="2.2" fill="#6ee7f9" />
+      <circle cx="20" cy="11.5" r="2.2" fill="#d4ff3a" />
     </svg>
   );
 }

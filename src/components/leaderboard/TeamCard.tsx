@@ -5,6 +5,7 @@ import { Award, TrendingUp, Users } from "lucide-react";
 import Link from "next/link";
 import { AnimatedCounter } from "@/components/gamification/AnimatedCounter";
 import { AnimatedProgressBar } from "@/components/gamification/AnimatedProgressBar";
+import { Tilt3D } from "@/components/ui/Tilt3D";
 import { RankDelta } from "./RankDelta";
 import { TeamLogo } from "./TeamLogo";
 import { spring } from "@/lib/motion";
@@ -25,6 +26,7 @@ export function TeamCard({ team: t, leaderPoints, index = 0, className }: { team
       transition={{ ...spring, delay: 0.55 + index * 0.06 }}
       className={cn("list-none", className)}
     >
+      <Tilt3D max={6}>
       <Link
         href={`/teams/${t.slug}`}
         className="glass group relative block overflow-hidden rounded-lg p-4 transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_0_0_1px_color-mix(in_srgb,var(--team-primary)_55%,transparent),0_0_40px_-10px_var(--team-primary)] sm:p-5"
@@ -64,6 +66,7 @@ export function TeamCard({ team: t, leaderPoints, index = 0, className }: { team
           <AnimatedProgressBar value={share} label={`${t.name} points relative to the leader`} height={6} />
         </div>
       </Link>
+      </Tilt3D>
     </motion.li>
   );
 }

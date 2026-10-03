@@ -12,7 +12,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const [categories, events, teams, students] = await Promise.all([repo.getCategories(), repo.listEvents(), repo.getTeams(), repo.getStudents()]);
   return (
     <AdminShell
-      session={{ name: session.name, role: session.role, color: "#6ee7f9" }}
+      session={{ name: session.name, role: session.role, color: "#d4ff3a" }}
       categories={categories}
       events={events}
       teams={teams}

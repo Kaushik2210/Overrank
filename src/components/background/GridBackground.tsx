@@ -16,7 +16,7 @@ export function GridBackground({ glow = "#6366f1" }: { glow?: string }) {
         transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.div
-        className="absolute top-1/3 -right-32 h-[26rem] w-[26rem] rounded-full bg-cyan-400/20 opacity-30 blur-3xl will-change-transform max-md:hidden"
+        className="absolute top-1/3 -right-32 h-[26rem] w-[26rem] rounded-full bg-lime-300/10 opacity-30 blur-3xl will-change-transform max-md:hidden"
         animate={rm ? undefined : { x: [0, -50, 0], y: [0, 40, 0] }}
         transition={{ duration: 28, repeat: Infinity, ease: "easeInOut" }}
       />
