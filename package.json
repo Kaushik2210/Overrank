@@ -1,6 +1,6 @@
 {
   "name": "overrank",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -50,5 +50,28 @@
     "typescript": "^5",
     "undici": "^7.30.0",
     "vitest": "^5.0.3"
+  },
+  "description": "OVERRANK: a live house-competition platform. Teams earn points, the leaderboard reacts in real time, and faculty run the season.",
+  "license": "MIT",
+  "author": "Kaushik",
+  "homepage": "https://overrank.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kaushik2210/Overrank.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Kaushik2210/Overrank/issues"
+  },
+  "keywords": [
+    "leaderboard",
+    "gamification",
+    "nextjs",
+    "supabase",
+    "typescript",
+    "campus",
+    "house-system"
+  ],
+  "engines": {
+    "node": ">=22"
   }
 }
