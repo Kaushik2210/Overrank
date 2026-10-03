@@ -146,7 +146,7 @@ h1, h2, h3, h4 {
 * { scrollbar-width: thin; scrollbar-color: rgb(255 255 255 / 0.18) transparent; }
 
 /* keep the app calm when the user (or OS) asks for it */
-@media (prefers-reduced-motion: reduce), (html[data-motion="reduce"]) {
+@media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
