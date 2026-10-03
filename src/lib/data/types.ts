@@ -199,6 +199,58 @@ export type AwardResult = {
   teamBefore: { rank: number; points: number };
   teamAfter: { rank: number; points: number; name: string };
   leaderChanged: boolean;
+  unlocked: UnlockedAchievement[];
 };
 
 export type ActivityPoint = { date: string; [teamSlug: string]: number | string };
+
+export type UnlockedAchievement = { studentId: string; studentName: string; achievement: Achievement };
+
+export type TeamDetail = {
+  team: TeamStanding;
+  members: StudentStanding[];
+  topContributors: StudentStanding[];
+  achievements: { achievement: Achievement; count: number }[];
+  eventsWon: EventItem[];
+  history: PointTransaction[];
+  categoryPerformance: { categoryId: string; name: string; color: string; points: number }[];
+  weekly: { week: string; points: number; total: number }[];
+  timeline: { at: string; kind: "event" | "award" | "achievement"; title: string; detail: string }[];
+};
+
+export type StudentDetail = {
+  student: StudentStanding;
+  achievements: (Achievement & { unlockedAt: string | null })[];
+  transactions: PointTransaction[];
+  categoryBreakdown: { categoryId: string; name: string; color: string; points: number }[];
+  registeredEventIds: string[];
+};
+
+export type TxQuery = {
+  q?: string;
+  teamId?: string;
+  categoryId?: string;
+  studentId?: string;
+  status?: TxStatus;
+  sort?: "newest" | "oldest" | "amount_desc" | "amount_asc";
+  page?: number;
+  pageSize?: number;
+};
+
+export type Analytics = {
+  pointsOverTime: ActivityPoint[];
+  teamPerformance: { slug: string; name: string; color: string; points: number }[];
+  categoryDistribution: { name: string; color: string; points: number }[];
+  topContributors: StudentStanding[];
+  participation: { slug: string; name: string; color: string; active: number; total: number }[];
+  heatmap: { team: string; color: string; cells: { category: string; points: number }[] }[];
+};
+
+export type RosterRow = { team: string; studentId: string; name: string };
+export type RosterIssue = { row: number; message: string };
+export type RosterPreview = {
+  valid: RosterRow[];
+  issues: RosterIssue[];
+  adds: number;
+  updates: number;
+};
