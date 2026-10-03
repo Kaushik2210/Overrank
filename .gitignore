@@ -11,7 +11,7 @@ next-env.d.ts
 coverage/
 playwright-report/
 test-results/
-screenshots/
+/screenshots/
 .DS_Store
 .uploads/
 data/login-codes.csv
