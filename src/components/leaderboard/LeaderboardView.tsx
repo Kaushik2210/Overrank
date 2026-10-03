@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { Podium } from "./Podium";
 import { TeamCard } from "./TeamCard";
 import { useRealtimeLeaderboard } from "@/hooks/useRealtimeLeaderboard";
+import { playSound } from "@/lib/sound";
 import { useToast } from "@/components/ui/Toast";
 import type { TeamStanding } from "@/lib/data/types";
 
@@ -32,6 +33,7 @@ export function LeaderboardView({ initial, live = true }: { initial: TeamStandin
     for (const t of teams) {
       const old = before.get(t.id);
       if (old && t.rank < old.rank) {
+        playSound("rank");
         toast({ kind: "rank", title: `RANK UPDATE: ${t.name} up to #${t.rank}`, body: `${t.points.toLocaleString("en-IN")} points` });
       }
     }

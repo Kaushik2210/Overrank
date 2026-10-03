@@ -1,6 +1,7 @@
 "use client";
 
 import { MotionConfig } from "motion/react";
+import { PrefsApplier } from "@/components/settings/SettingsForm";
 import { ToastProvider } from "@/components/ui/Toast";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 
@@ -9,7 +10,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
   const rm = useReducedMotionSafe();
   return (
     <MotionConfig reducedMotion={rm ? "always" : "user"}>
-      <ToastProvider>{children}</ToastProvider>
+      <ToastProvider>
+        <PrefsApplier />
+        {children}
+      </ToastProvider>
     </MotionConfig>
   );
 }

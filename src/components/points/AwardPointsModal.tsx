@@ -10,6 +10,7 @@ import { Field, Input, Select, Textarea } from "@/components/ui/Field";
 import { Modal } from "@/components/ui/Modal";
 import { useToast } from "@/components/ui/Toast";
 import { awardPointsAction, searchStudentsAction, teamMembersAction } from "@/lib/actions/admin";
+import { playSound } from "@/lib/sound";
 import { awardSchema } from "@/lib/validators";
 import { cn, signed } from "@/lib/utils";
 import { spring } from "@/lib/motion";
@@ -103,6 +104,7 @@ export function AwardPointsModal({ open, onClose, categories, events, teams, pre
         return;
       }
       setResult({ r: r.data, names: picked.map((p) => p.name), amount: amt });
+      playSound(r.data.unlocked.length ? "unlock" : "award");
     });
   };
 
