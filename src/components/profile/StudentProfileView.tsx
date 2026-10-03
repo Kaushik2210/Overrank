@@ -26,7 +26,6 @@ export function StudentProfileView({ detail, totalStudents, txHref, children }: 
   const unlocked = detail.achievements.filter((a) => a.unlockedAt);
   const sorted = [...detail.achievements].sort((a, b) => Number(!!b.unlockedAt) - Number(!!a.unlockedAt));
   const percentile = totalStudents > 1 ? 1 - (s.rank - 1) / (totalStudents - 1) : 1;
-  const color = s.teamColor;
 
   return (
     <div style={teamVars({ colorPrimary: s.teamColor, colorGlow: s.teamGlow })}>

@@ -1,9 +1,9 @@
 "use client";
 
 import { Volume2, VolumeX } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/Button";
-import { applyPrefs, DEFAULT_PREFS, readPrefs, writePrefs, type Prefs } from "@/lib/prefs";
+import { applyPrefs, readPrefs, usePrefs, writePrefs, type Prefs } from "@/lib/prefs";
 import { playSound } from "@/lib/sound";
 import { cn } from "@/lib/utils";
 
@@ -14,12 +14,8 @@ const MOTION: { id: Prefs["motion"]; label: string; hint: string }[] = [
 ];
 
 export function SettingsForm() {
-  const [p, setP] = useState<Prefs>(DEFAULT_PREFS);
-  useEffect(() => setP(readPrefs()), []);
-  const update = (next: Prefs) => {
-    setP(next);
-    writePrefs(next);
-  };
+  const p = usePrefs();
+  const update = (next: Prefs) => writePrefs(next);
   return (
     <div className="space-y-6">
       <section className="glass rounded-xl p-6">

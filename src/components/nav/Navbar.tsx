@@ -20,7 +20,11 @@ export function Navbar({ session, bell }: { session: NavSession; bell?: React.Re
   const [open, setOpen] = useState(false);
   const links = [...PRIMARY_NAV, ...MORE_NAV];
 
-  useEffect(() => setOpen(false), [path]);
+  const [lastPath, setLastPath] = useState(path);
+  if (path !== lastPath) {
+    setLastPath(path);
+    setOpen(false);
+  }
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-bg-0/70 backdrop-blur-xl max-md:backdrop-blur-none max-md:bg-bg-0/90">

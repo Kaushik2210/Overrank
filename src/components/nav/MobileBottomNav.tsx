@@ -17,7 +17,11 @@ export function MobileBottomNav({ role }: Props) {
   const path = usePathname();
   const [more, setMore] = useState(false);
 
-  useEffect(() => setMore(false), [path]);
+  const [lastPath, setLastPath] = useState(path);
+  if (path !== lastPath) {
+    setLastPath(path);
+    setMore(false);
+  }
 
   const moreItems = [
     { href: "/about", label: "About", icon: Info },

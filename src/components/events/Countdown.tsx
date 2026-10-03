@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { cn } from "@/lib/utils";
 
 function parts(ms: number) {
@@ -47,14 +47,16 @@ function Unit({ value, label, compact }: { value: number; label: string; compact
   );
 }
 
-/** Flip-style countdown. Renders blank until mounted so server and client markup agree. */
+function subscribeSecond(cb: () => void) {
+  const id = window.setInterval(cb, 1000);
+  return () => window.clearInterval(id);
+}
+const nowSecond = () => Math.floor(Date.now() / 1000) * 1000;
+
+/** Flip-style countdown. Hidden on the server (snapshot 0) so server and client markup agree. */
 export function Countdown({ to, compact, className }: { to: string; compact?: boolean; className?: string }) {
-  const [now, setNow] = useState<number | null>(null);
-  useEffect(() => {
-    setNow(Date.now());
-    const id = window.setInterval(() => setNow(Date.now()), 1000);
-    return () => window.clearInterval(id);
-  }, []);
+  const tick = useSyncExternalStore(subscribeSecond, nowSecond, () => 0);
+  const now = tick === 0 ? null : tick;
 
   const target = new Date(to).getTime();
   const p = parts(now === null ? 0 : target - now);

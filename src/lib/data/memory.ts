@@ -734,7 +734,8 @@ export const memoryRepo: Repo = {
       if (seen.has(id)) return void issues.push({ row, message: `Duplicate student ID ${id} in this file` });
       seen.add(id);
       valid.push({ team: teamNames.get(r.team.trim().toLowerCase())!.name, studentId: id, name: r.name.trim() });
-      known.has(id) ? updates++ : adds++;
+      if (known.has(id)) updates++;
+      else adds++;
     });
     return { valid, issues, adds, updates };
   },

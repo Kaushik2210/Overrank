@@ -12,7 +12,6 @@ import type {
   Achievement,
   AwardResult,
   Dispute,
-  EventItem,
   Notification,
   PointTransaction,
   Session,

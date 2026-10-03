@@ -71,7 +71,11 @@ export function AdminShell({ session, bell, categories, events, teams, students,
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  useEffect(() => setMoreOpen(false), [path]);
+  const [lastPath, setLastPath] = useState(path);
+  if (path !== lastPath) {
+    setLastPath(path);
+    setMoreOpen(false);
+  }
 
   const go = (href: string) => {
     setPaletteOpen(false);

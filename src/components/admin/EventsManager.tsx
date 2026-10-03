@@ -2,7 +2,7 @@
 
 import { CalendarPlus, Pencil, Trash2, Trophy } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/Button";
 import { Field, Input, Select, Textarea } from "@/components/ui/Field";
 import { Modal } from "@/components/ui/Modal";
@@ -27,7 +27,7 @@ const blank = (cat: string): Draft => {
 };
 
 export function EventsManager({ events, teams, categories, openNew }: { events: EventItem[]; teams: Team[]; categories: Category[]; openNew?: boolean }) {
-  const [draft, setDraft] = useState<Draft | null>(null);
+  const [draft, setDraft] = useState<Draft | null>(() => (openNew ? blank(categories[0]?.id ?? "") : null));
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [confirm, setConfirm] = useState<EventItem | null>(null);
   const [winner, setWinner] = useState<EventItem | null>(null);
@@ -36,10 +36,6 @@ export function EventsManager({ events, teams, categories, openNew }: { events: 
   const [pending, start] = useTransition();
   const router = useRouter();
   const { toast } = useToast();
-
-  useEffect(() => {
-    if (openNew) setDraft(blank(categories[0]?.id ?? ""));
-  }, [openNew, categories]);
 
   const edit = (e: EventItem) => setDraft({ id: e.id, title: e.title, description: e.description, startsAt: toLocal(e.startsAt), endsAt: toLocal(e.endsAt), points: String(e.points), categoryId: e.categoryId, location: e.location });
   const set = (k: keyof Draft, v: string) => setDraft((d) => (d ? { ...d, [k]: v } : d));

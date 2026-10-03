@@ -33,10 +33,11 @@ function useSubmit<T extends Record<string, unknown>>(action: (fd: FormData) => 
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const router = useRouter();
   const { toast } = useToast();
-  const submit = (values: T, file: HTMLInputElement | null) =>
+  const submit = (values: T, fileRef: React.RefObject<HTMLInputElement | null>) =>
     start(async () => {
       const fd = new FormData();
       for (const [k, v] of Object.entries(values)) fd.set(k, String(v));
+      const file = fileRef.current;
       if (file?.files?.[0]) fd.set("evidence", file.files[0]);
       const r = await action(fd);
       if (r.ok) {
@@ -62,7 +63,7 @@ export function SuggestionForm({ categories }: { categories: Category[] }) {
   const { pending, status, submit } = useSubmit<SuggestionInput>(createSuggestionAction, "Suggestion sent to faculty", (k, m) => f.setError(k, { message: m }), () => f.reset());
   const e = f.formState.errors;
   return (
-    <form onSubmit={f.handleSubmit((v) => submit(v, file.current))} className="glass space-y-4 rounded-xl p-5 sm:p-6" noValidate>
+    <form onSubmit={(e) => f.handleSubmit((v) => submit(v, file))(e)} className="glass space-y-4 rounded-xl p-5 sm:p-6" noValidate>
       <Field label="Activity" error={e.activity?.message}>
         {({ id, describedBy, invalid }) => <Input id={id} aria-describedby={describedBy} invalid={invalid} placeholder="Won the inter-college quiz" {...f.register("activity")} />}
       </Field>
@@ -100,7 +101,7 @@ export function DisputeForm({ transactions, defaultTx }: { transactions: PointTr
   const { pending, status, submit } = useSubmit<DisputeInput>(createDisputeAction, "Dispute filed", (k, m) => f.setError(k, { message: m }), () => f.reset({ transactionId: "", reason: "" }));
   const e = f.formState.errors;
   return (
-    <form onSubmit={f.handleSubmit((v) => submit(v, file.current))} className="glass space-y-4 rounded-xl p-5 sm:p-6" noValidate>
+    <form onSubmit={(e) => f.handleSubmit((v) => submit(v, file))(e)} className="glass space-y-4 rounded-xl p-5 sm:p-6" noValidate>
       <Field label="Transaction" error={e.transactionId?.message}>
         {({ id, describedBy, invalid }) => (
           <Select id={id} aria-describedby={describedBy} invalid={invalid} {...f.register("transactionId")}>

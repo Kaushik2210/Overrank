@@ -10,11 +10,16 @@ export function parseCsv(text: string): string[][] {
   for (let i = 0; i < src.length; i++) {
     const c = src[i];
     if (quoted) {
-      if (c === '"' && src[i + 1] === '"') (cur += '"'), i++;
-      else if (c === '"') quoted = false;
+      if (c === '"' && src[i + 1] === '"') {
+        cur += '"';
+        i++;
+      } else if (c === '"') quoted = false;
       else cur += c;
     } else if (c === '"') quoted = true;
-    else if (c === ",") (row.push(cur), (cur = ""));
+    else if (c === ",") {
+      row.push(cur);
+      cur = "";
+    }
     else if (c === "\n" || c === "\r") {
       if (c === "\r" && src[i + 1] === "\n") i++;
       row.push(cur);

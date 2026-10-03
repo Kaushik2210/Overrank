@@ -15,6 +15,11 @@ export const dynamic = "force-dynamic";
 const PAGE = 15;
 const date = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "2-digit" });
 
+function SortIcon({ on, down }: { on: boolean; down: boolean }) {
+  if (!on) return null;
+  return down ? <ArrowDown className="size-3" /> : <ArrowUp className="size-3" />;
+}
+
 type SP = { q?: string; team?: string; category?: string; status?: string; sort?: string; page?: string };
 
 export default async function PointsPage({ searchParams }: { searchParams: Promise<SP> }) {
@@ -35,8 +40,6 @@ export default async function PointsPage({ searchParams }: { searchParams: Promi
   };
   const dateSort = sort === "newest" ? "oldest" : "newest";
   const amtSort = sort === "amount_desc" ? "amount_asc" : "amount_desc";
-
-  const SortIcon = ({ on, down }: { on: boolean; down: boolean }) => (on ? down ? <ArrowDown className="size-3" /> : <ArrowUp className="size-3" /> : null);
 
   return (
     <div className="mx-auto max-w-7xl">
