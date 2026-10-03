@@ -12,7 +12,11 @@ export function rankBy<T>(rows: T[], points: (r: T) => number): (T & { rank: num
   });
 }
 
-/** Sum active transactions only. Reversals are separate compensating rows, so they net out naturally. */
-export function sumActive<T extends { amount: number; status: string }>(txs: T[]) {
-  return txs.reduce((n, t) => (t.status === "active" ? n + t.amount : n), 0);
+/**
+ * The ledger is append-only. A reversed row keeps its amount and is flagged "reversed";
+ * its compensating row (opposite sign) cancels it out, so both count. Only pending rows
+ * (awaiting approval) are left out of totals.
+ */
+export function sumLedger<T extends { amount: number; status: string }>(txs: T[]) {
+  return txs.reduce((n, t) => (t.status === "pending" ? n : n + t.amount), 0);
 }

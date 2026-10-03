@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { rankBy, sumActive } from "@/lib/standings";
+import { rankBy, sumLedger } from "@/lib/standings";
 
 describe("rankBy", () => {
   it("ranks by points descending", () => {
@@ -14,11 +14,12 @@ describe("rankBy", () => {
   });
 });
 
-describe("sumActive", () => {
-  it("ignores reversed and pending rows", () => {
-    const total = sumActive([
+describe("sumLedger", () => {
+  it("skips pending rows but counts a reversed row together with its compensation", () => {
+    const total = sumLedger([
       { amount: 50, status: "active" },
       { amount: 30, status: "reversed" },
+      { amount: -30, status: "active" }, // compensating row
       { amount: 20, status: "pending" },
       { amount: -10, status: "active" },
     ]);
