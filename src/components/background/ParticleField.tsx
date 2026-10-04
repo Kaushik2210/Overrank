@@ -18,7 +18,7 @@ export function ParticleField({ color = "212,255,58" }: { color?: string }) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const count = touch ? 12 : 36;
+    const count = touch ? 15 : 60;
     let w = 0;
     let h = 0;
     const mouse = { x: -999, y: -999 };

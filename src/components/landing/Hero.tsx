@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useScroll, useTransform, type MotionValue } from "motion/react";
+import { motion, useMotionTemplate, useScroll, useTransform, type MotionValue } from "motion/react";
 import { ArrowRight, ChevronDown, Users } from "lucide-react";
 import { useRef } from "react";
 import { GridBackground } from "@/components/background/GridBackground";
@@ -34,7 +34,7 @@ const line = (i: number, rm: boolean) => ({
 export function Hero({ stats }: { stats: Stat[] }) {
   const rm = useReducedMotionSafe();
   const ref = useRef<HTMLElement>(null);
-  // driven straight from scroll: a spring on top trails the page and reads as lag
+  // follows the scroll directly (the old spring trailed behind the page and read as lag)
   const { scrollYProgress: p } = useScroll({ target: ref, offset: ["start start", "end end"] });
 
   const rotX = useTransform(p, [0, 1], [62, 14]);
@@ -43,12 +43,15 @@ export function Hero({ stats }: { stats: Stat[] }) {
   const plateOpacity = useTransform(p, [0, 0.85, 1], [1, 1, 0.15]);
   const copyA = useTransform(p, [0, 0.2, 0.36], [1, 1, 0]);
   const copyAy = useTransform(p, [0, 0.36], [0, -90]);
+  const copyAblur = useTransform(p, [0.2, 0.36], [0, 12]);
+  const copyAfilter = useMotionTemplate`blur(${copyAblur}px)`;
   const copyB = useTransform(p, [0.4, 0.58, 1], [0, 1, 1]);
   const copyBy = useTransform(p, [0.4, 0.58], [70, 0]);
+  const floorY = useTransform(p, [0, 1], [0, 160]);
   const cue = useTransform(p, [0, 0.12], [1, 0]);
 
   return (
-    <section ref={ref} className={`relative isolate ${rm ? "" : "h-[260vh]"}`}>
+    <section ref={ref} className={`noise relative isolate ${rm ? "" : "h-[260vh]"}`}>
       <div className={`${rm ? "relative py-20" : "sticky top-0 h-dvh"} overflow-hidden`}>
         <GridBackground />
         <ParticleField />
@@ -56,14 +59,14 @@ export function Hero({ stats }: { stats: Stat[] }) {
         <div aria-hidden className="aurora pointer-events-none absolute -top-1/4 -left-1/4 size-[60rem] rounded-full bg-[radial-gradient(closest-side,rgb(212_255_58/0.10),transparent)]" />
 
         {/* perspective floor that rushes toward you as you scroll */}
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-[55%] [mask-image:linear-gradient(to_top,#000_15%,transparent_85%)] max-md:opacity-60">
-          <div className="absolute inset-x-[-40%] bottom-0 h-[220%] origin-bottom [transform:perspective(520px)_rotateX(68deg)]">
+        <motion.div aria-hidden style={rm ? undefined : { y: floorY }} className="pointer-events-none absolute inset-x-0 bottom-0 h-[55%] will-change-transform [perspective:520px] max-md:opacity-60">
+          <div className="absolute inset-x-[-40%] bottom-0 h-[220%] origin-bottom [transform:rotateX(68deg)] [mask-image:linear-gradient(to_top,#000_15%,transparent_85%)]">
             <div
               className={rm ? "h-full w-full" : "floor-run h-[calc(100%+56px)] w-full -translate-y-[56px]"}
               style={{ backgroundImage: "linear-gradient(to right, rgb(212 255 58 / 0.28) 1px, transparent 1px), linear-gradient(to bottom, rgb(212 255 58 / 0.28) 1px, transparent 1px)", backgroundSize: "56px 56px" }}
             />
           </div>
-        </div>
+        </motion.div>
 
         {/* 3D plate stack */}
         <div aria-hidden className="pointer-events-none absolute top-1/2 right-[6%] size-[28rem] -translate-y-[56%] [perspective:1200px] max-lg:right-[-14%] max-md:size-[20rem] max-md:opacity-50">
@@ -75,7 +78,7 @@ export function Hero({ stats }: { stats: Stat[] }) {
         </div>
 
         {/* copy, layer A */}
-        <motion.div style={rm ? undefined : { opacity: copyA, y: copyAy }} className="absolute inset-0 grid content-center px-4 sm:px-6">
+        <motion.div style={rm ? undefined : { opacity: copyA, y: copyAy, filter: copyAfilter }} className="absolute inset-0 grid content-center px-4 will-change-[transform,opacity,filter] sm:px-6">
           <div className="mx-auto w-full max-w-6xl">
             <motion.p initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15, duration: 0.4 }} className="num inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3.5 py-1.5 text-[11px] tracking-[0.25em] text-accent uppercase">
               <span className="size-1.5 animate-pulse rounded-full bg-accent" aria-hidden /> Season live
@@ -150,7 +153,7 @@ function Plate({ i, progress, fill, stroke, label, still }: { i: number; progres
   return (
     <motion.div className="preserve-3d absolute inset-0" style={still ? { transform: `translateZ(${(i - 1.5) * 60}px)` } : { z }}>
       <div className={still ? "" : "bob"} style={{ animationDelay: `${i * -0.7}s` }}>
-        <svg viewBox="0 0 100 100" className="size-full">
+        <svg viewBox="0 0 100 100" className="size-full drop-shadow-[0_18px_30px_rgb(0_0_0/0.55)]">
           <path d={HEX} fill={fill} stroke={stroke} strokeWidth="1.4" strokeLinejoin="round" />
           {label && (
             <text x="50" y="62" textAnchor="middle" fontSize="30" fontWeight="800" fill="#05070d" style={{ fontFamily: "var(--font-space-grotesk), sans-serif" }}>
