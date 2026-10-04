@@ -69,7 +69,7 @@ export function Hero({ stats }: { stats: Stat[] }) {
         </motion.div>
 
         {/* 3D plate stack */}
-        <div aria-hidden className="pointer-events-none absolute top-1/2 right-[6%] size-[28rem] -translate-y-[56%] [perspective:1200px] max-lg:right-[-14%] max-md:size-[20rem] max-md:opacity-50">
+        <div aria-hidden className="pointer-events-none absolute top-1/2 right-[6%] size-[28rem] -translate-y-[56%] [perspective:1200px] max-lg:right-[-14%] max-md:top-[24%] max-md:right-[-3rem] max-md:size-[12rem] max-md:opacity-30">
           <motion.div className="preserve-3d relative size-full will-change-transform" style={rm ? undefined : { rotateX: rotX, rotateY: rotY, scale }}>
             {PLATES.map((pl, i) => (
               <Plate key={i} i={i} progress={p} fade={plateOpacity} fill={pl.fill} stroke={pl.stroke} label={pl.label} still={rm} />
@@ -78,7 +78,7 @@ export function Hero({ stats }: { stats: Stat[] }) {
         </div>
 
         {/* copy, layer A */}
-        <motion.div style={rm ? undefined : { opacity: copyA, y: copyAy, filter: copyAfilter }} className="absolute inset-0 grid content-center px-4 will-change-[transform,opacity,filter] sm:px-6">
+        <motion.div style={rm ? undefined : { opacity: copyA, y: copyAy, filter: copyAfilter }} className={`px-4 sm:px-6 ${rm ? "relative" : "absolute inset-0 grid content-center will-change-[transform,opacity,filter]"}`}>
           <div className="mx-auto w-full max-w-6xl">
             <motion.p initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15, duration: 0.4 }} className="num inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3.5 py-1.5 text-[11px] tracking-[0.25em] text-accent uppercase">
               <span className="size-1.5 animate-pulse rounded-full bg-accent" aria-hidden /> Season live
@@ -86,9 +86,13 @@ export function Hero({ stats }: { stats: Stat[] }) {
             <h1 className="mt-6 font-display text-[2.6rem] leading-[0.98] font-bold tracking-tight sm:text-7xl lg:text-[5.5rem]">
               {["THE CAMPUS", "COMPETITION", "HAS BEGUN."].map((t, i) => (
                 <span key={t} className="block overflow-hidden pb-1">
-                  <motion.span {...line(i, rm)} className={i === 2 ? "block text-accent [text-shadow:4px_4px_0_rgb(0_0_0/0.6)]" : "block"}>
-                    {t}
-                  </motion.span>
+                  {rm ? (
+                    <span className={i === 2 ? "block text-accent [text-shadow:4px_4px_0_rgb(0_0_0/0.6)]" : "block"}>{t}</span>
+                  ) : (
+                    <motion.span {...line(i, rm)} className={i === 2 ? "block text-accent [text-shadow:4px_4px_0_rgb(0_0_0/0.6)]" : "block"}>
+                      {t}
+                    </motion.span>
+                  )}
                 </span>
               ))}
             </h1>

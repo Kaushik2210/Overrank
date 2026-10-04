@@ -157,6 +157,10 @@ h1, h2 { text-transform: uppercase; letter-spacing: -0.015em; }
     scroll-behavior: auto !important;
   }
 }
+/* phones get the static design: no looping CSS animations */
+@media (max-width: 767px) {
+  .floor-run, .bob, .aurora, .marquee-track, .skeleton-sheen { animation: none !important; }
+}
 html[data-motion="reduce"] *, html[data-motion="reduce"] *::before, html[data-motion="reduce"] *::after {
   animation-duration: 0.01ms !important;
   animation-iteration-count: 1 !important;

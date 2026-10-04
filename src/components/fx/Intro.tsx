@@ -11,7 +11,7 @@ export function Intro() {
 
   // Runs once on mount. Reduced-motion users skip it; everyone else sees it once per browser session.
   useEffect(() => {
-    let skip = window.matchMedia("(prefers-reduced-motion: reduce)").matches || document.documentElement.dataset.motion === "reduce";
+    let skip = window.matchMedia("(prefers-reduced-motion: reduce), (max-width: 767px)").matches || document.documentElement.dataset.motion === "reduce";
     try {
       if (sessionStorage.getItem(SEEN)) skip = true;
       else sessionStorage.setItem(SEEN, "1");
