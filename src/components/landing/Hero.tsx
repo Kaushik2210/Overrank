@@ -70,9 +70,9 @@ export function Hero({ stats }: { stats: Stat[] }) {
 
         {/* 3D plate stack */}
         <div aria-hidden className="pointer-events-none absolute top-1/2 right-[6%] size-[28rem] -translate-y-[56%] [perspective:1200px] max-lg:right-[-14%] max-md:size-[20rem] max-md:opacity-50">
-          <motion.div className="preserve-3d relative size-full will-change-transform" style={rm ? undefined : { rotateX: rotX, rotateY: rotY, scale, opacity: plateOpacity }}>
+          <motion.div className="preserve-3d relative size-full will-change-transform" style={rm ? undefined : { rotateX: rotX, rotateY: rotY, scale }}>
             {PLATES.map((pl, i) => (
-              <Plate key={i} i={i} progress={p} fill={pl.fill} stroke={pl.stroke} label={pl.label} still={rm} />
+              <Plate key={i} i={i} progress={p} fade={plateOpacity} fill={pl.fill} stroke={pl.stroke} label={pl.label} still={rm} />
             ))}
           </motion.div>
         </div>
@@ -147,12 +147,13 @@ export function Hero({ stats }: { stats: Stat[] }) {
   );
 }
 
-function Plate({ i, progress, fill, stroke, label, still }: { i: number; progress: MotionValue<number>; fill: string; stroke: string; label: string; still: boolean }) {
+function Plate({ i, progress, fade, fill, stroke, label, still }: { i: number; progress: MotionValue<number>; fade: MotionValue<number>; fill: string; stroke: string; label: string; still: boolean }) {
   // plates start close together and fly apart along Z as the hero scrolls
-  const z = useTransform(progress, (s) => (i - 1.5) * (60 + s * 150));
+  const z = useTransform(progress, (s) => (i - 1.5) * (60 + s * 260));
   return (
     <motion.div className="preserve-3d absolute inset-0" style={still ? { transform: `translateZ(${(i - 1.5) * 60}px)` } : { z }}>
-      <div className={still ? "" : "bob"} style={{ animationDelay: `${i * -0.7}s` }}>
+      {/* opacity lives here, not on the preserve-3d parent: any opacity below 1 there flattens the stack and kills the Z flight */}
+      <motion.div className={still ? "" : "bob"} style={{ animationDelay: `${i * -0.7}s`, opacity: still ? 1 : fade }}>
         <svg viewBox="0 0 100 100" className="size-full drop-shadow-[0_18px_30px_rgb(0_0_0/0.55)]">
           <path d={HEX} fill={fill} stroke={stroke} strokeWidth="1.4" strokeLinejoin="round" />
           {label && (
@@ -161,7 +162,7 @@ function Plate({ i, progress, fill, stroke, label, still }: { i: number; progres
             </text>
           )}
         </svg>
-      </div>
+      </motion.div>
     </motion.div>
   );
 }
