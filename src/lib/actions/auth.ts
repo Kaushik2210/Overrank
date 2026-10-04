@@ -65,13 +65,17 @@ export async function signInAction(input: unknown): Promise<ActionResult> {
 
 /* ------------------------------------------------------------ forgot / reset password */
 
+/**
+ * Where reset links point. In production this is pinned to configuration, never the Host header, because
+ * a spoofed Host would otherwise let an attacker steer the emailed link to their own domain.
+ */
 async function siteOrigin() {
-  const fixed = process.env.NEXT_PUBLIC_SITE_URL;
+  const fixed = process.env.NEXT_PUBLIC_SITE_URL ?? (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : undefined);
   if (fixed) return fixed.replace(/\/$/, "");
+  if (process.env.NODE_ENV === "production") throw new Error("NEXT_PUBLIC_SITE_URL is not set");
   const h = await headers();
-  const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000";
-  const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
-  return `${proto}://${host}`;
+  const host = h.get("host") ?? "localhost:3000"; // local development only
+  return `${host.startsWith("localhost") ? "http" : "https"}://${host}`;
 }
 
 const emailSchema = z.object({ email: z.string().trim().toLowerCase().email("Enter a valid email address").max(120) });

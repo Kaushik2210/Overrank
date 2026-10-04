@@ -5,7 +5,7 @@ import { z } from "zod";
 import { fail, run, zodFail } from "./helpers";
 import { getRepo } from "@/lib/data";
 import { saveEvidence } from "@/lib/storage";
-import { awardSchema, teamSchema, xpSettingsSchema } from "@/lib/validators";
+import { awardSchema, colorSchema, iconSchema, idSchema, studentIdSchema, teamSchema, xpSettingsSchema } from "@/lib/validators";
 import type { RosterRow } from "@/lib/data/types";
 
 function refreshStandings() {
@@ -44,6 +44,7 @@ export async function awardPointsAction(fd: FormData) {
 }
 
 export async function reverseTransactionAction(id: string, note: string) {
+  if (!idSchema.safeParse(id).success) return fail("Invalid transaction");
   const r = await run({ staff: true }, (s) => getRepo().reverseTransaction(s, id, String(note).slice(0, 200)));
   if (r.ok) refreshStandings();
   return r;
@@ -59,7 +60,7 @@ export async function updateTeamAction(input: unknown) {
 }
 
 export async function createCategoryAction(input: unknown) {
-  const p = z.object({ name: z.string().trim().min(2, "Name is too short").max(40), icon: z.string().min(1), color: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Use a hex colour") }).safeParse(input);
+  const p = z.object({ name: z.string().trim().min(2, "Name is too short").max(40), icon: iconSchema, color: colorSchema }).safeParse(input);
   if (!p.success) return zodFail(p.error);
   const r = await run({ staff: true }, (s) => getRepo().createCategory(s, p.data));
   revalidatePath("/admin/settings");
@@ -79,16 +80,16 @@ export async function updateXpSettingsAction(input: unknown) {
 export async function saveAchievementAction(input: unknown) {
   const p = z
     .object({
-      id: z.string().optional(),
+      id: idSchema.optional(),
       name: z.string().trim().min(2).max(40),
       description: z.string().trim().max(200),
-      icon: z.string().min(1),
+      icon: iconSchema,
       rarity: z.enum(["common", "rare", "epic", "legendary"]),
       xp: z.coerce.number().int().min(0).max(2000),
       rule: z.discriminatedUnion("kind", [
         z.object({ kind: z.literal("manual") }),
         z.object({ kind: z.literal("points"), threshold: z.coerce.number().int().min(1) }),
-        z.object({ kind: z.literal("category"), categoryId: z.string().min(1), threshold: z.coerce.number().int().min(1) }),
+        z.object({ kind: z.literal("category"), categoryId: idSchema, threshold: z.coerce.number().int().min(1) }),
       ]),
     })
     .safeParse(input);
@@ -100,12 +101,13 @@ export async function saveAchievementAction(input: unknown) {
 }
 
 export async function grantAchievementAction(achievementId: string, studentId: string) {
+  if (!idSchema.safeParse(achievementId).success || !studentIdSchema.safeParse(studentId).success) return fail("Invalid request");
   const r = await run({ staff: true }, (s) => getRepo().grantAchievement(s, achievementId, studentId));
   revalidatePath("/achievements");
   return r;
 }
 
-const rosterRows = z.array(z.object({ team: z.string(), studentId: z.string(), name: z.string() })).max(2000);
+const rosterRows = z.array(z.object({ team: z.string().max(60), studentId: z.string().max(20), name: z.string().max(120) })).max(2000);
 
 export async function previewRosterAction(rows: unknown) {
   const p = rosterRows.safeParse(rows);
@@ -122,6 +124,7 @@ export async function commitRosterAction(rows: unknown) {
 }
 
 export async function teamMembersAction(teamId: string) {
+  if (!idSchema.safeParse(teamId).success) return fail("Invalid team");
   return run({ staff: true }, async () => {
     const all = await getRepo().getStudents();
     return all.filter((s) => s.teamId === teamId).map((s) => ({ id: s.id, name: s.name, teamName: s.teamName, teamColor: s.teamColor, teamId: s.teamId, points: s.points }));

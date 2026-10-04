@@ -3,16 +3,17 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { fail, run, zodFail } from "./helpers";
+import { idSchema } from "@/lib/validators";
 import { getRepo } from "@/lib/data";
 
 const eventSchema = z.object({
-  id: z.string().optional(),
+  id: idSchema.optional(),
   title: z.string().trim().min(3, "Give the event a title").max(120),
   description: z.string().trim().max(1000).default(""),
   startsAt: z.string().refine((v) => !Number.isNaN(Date.parse(v)), "Pick a start time"),
   endsAt: z.string().refine((v) => !Number.isNaN(Date.parse(v)), "Pick an end time"),
   points: z.coerce.number().int().min(0).max(5000),
-  categoryId: z.string().min(1, "Pick a category"),
+  categoryId: idSchema,
   location: z.string().trim().min(1, "Add a location").max(120),
 });
 
@@ -29,6 +30,7 @@ export async function saveEventAction(input: unknown) {
 }
 
 export async function deleteEventAction(id: string) {
+  if (!idSchema.safeParse(id).success) return fail("Invalid event");
   const r = await run({ staff: true }, (s) => getRepo().deleteEvent(s, id));
   revalidatePath("/events");
   revalidatePath("/admin/events");
@@ -36,6 +38,7 @@ export async function deleteEventAction(id: string) {
 }
 
 export async function setWinnerAction(eventId: string, teamId: string, award: boolean) {
+  if (!idSchema.safeParse(eventId).success || !idSchema.safeParse(teamId).success) return fail("Invalid request");
   const r = await run({ staff: true }, (s) => getRepo().setEventWinner(s, eventId, teamId, award));
   revalidatePath("/events");
   revalidatePath("/admin/events");
