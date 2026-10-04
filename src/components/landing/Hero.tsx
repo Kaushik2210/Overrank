@@ -52,7 +52,7 @@ export function Hero({ stats }: { stats: Stat[] }) {
 
   return (
     <section ref={ref} className={`noise relative isolate ${rm ? "" : "h-[260vh]"}`}>
-      <div className={`${rm ? "relative py-20" : "sticky top-0 h-dvh"} overflow-hidden`}>
+      <div key={rm ? "static" : "live"} className={`${rm ? "relative py-20" : "sticky top-0 h-dvh"} overflow-hidden`}>
         <GridBackground />
         <ParticleField />
         <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.07] [background:repeating-linear-gradient(0deg,transparent_0_3px,#fff_3px_4px)]" />
