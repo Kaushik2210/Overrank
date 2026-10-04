@@ -34,7 +34,8 @@ if (EMAIL && PASSWORD) {
   await page.fill('input[name="email"]', EMAIL);
   await page.fill('input[name="password"]', "definitely-wrong-password");
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
-  check("a wrong password is rejected", await page.getByText("do not match").isVisible({ timeout: 15000 }).catch(() => false));
+  const rejected = await page.getByText("do not match").waitFor({ timeout: 15000 }).then(() => true, () => false);
+  check("a wrong password is rejected", rejected);
   await page.fill('input[name="password"]', PASSWORD);
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
   await page.waitForURL(/\/admin/, { timeout: 30000 }).catch(() => {});
