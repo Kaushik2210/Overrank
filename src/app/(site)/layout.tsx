@@ -11,7 +11,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         Skip to content
       </a>
       <Navbar session={nav} />
-      <main id="main" className="pb-[calc(var(--bottom-nav-h)+2rem)] md:pb-0">
+      <main id="main">
         {children}
       </main>
       <Footer />
