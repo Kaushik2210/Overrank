@@ -187,7 +187,7 @@ export function AdminShell({ session, categories, events, teams, students, child
           </Command.Group>
           <Command.Group heading="Students" className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-faint [&_[cmdk-group-heading]]:uppercase">
             {students.map((s) => (
-              <Item key={s.id} icon={UserSquare2} value={`student ${s.name} ${s.id} ${s.teamName}`} onSelect={() => go(`/students/${s.id}`)}>
+              <Item key={s.id} icon={UserSquare2} value={`student ${s.name} ${s.id} ${s.teamName}`} onSelect={() => go("/admin/students")}>
                 {s.name} <span className="num ml-auto text-xs text-faint">{s.id}</span>
               </Item>
             ))}

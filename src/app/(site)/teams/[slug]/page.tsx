@@ -1,6 +1,5 @@
 import { Award, CalendarCheck, Star, TrendingUp, Users } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BarsChart, TrendChart } from "@/components/charts/LazyCharts";
 import { AchievementBadge, RARITY } from "@/components/gamification/AchievementBadge";
@@ -84,12 +83,12 @@ export default async function TeamPage({ params }: Props) {
           <StaggerGroup gap={0.04} className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {d.members.map((m) => (
               <StaggerItem key={m.id}>
-                <Link href={`/students/${m.id}`} className="glass flex items-center gap-3 rounded-lg p-3.5 transition-colors hover:border-line-strong">
+                <div className="glass flex items-center gap-3 rounded-lg p-3.5">
                   <StudentAvatar name={m.name} color={t.colorPrimary} glow={t.colorGlow} size={40} />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium">{m.name}</p>
                   </div>
-                </Link>
+                </div>
               </StaggerItem>
             ))}
           </StaggerGroup>

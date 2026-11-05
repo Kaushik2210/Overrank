@@ -3,23 +3,20 @@ import Link from "next/link";
 import { AdminHeader, Panel, StatCard } from "@/components/admin/bits";
 import { QuickAward } from "@/components/admin/QuickAward";
 import { TrendChart } from "@/components/charts/LazyCharts";
-import { StudentAvatar } from "@/components/gamification/StudentAvatar";
 import { LeaderboardView } from "@/components/leaderboard/LeaderboardView";
 import { TransactionCard } from "@/components/points/TransactionCard";
 import { getRepo } from "@/lib/data";
-import { formatPoints, timeAgo } from "@/lib/utils";
+import { timeAgo } from "@/lib/utils";
 
 export default async function AdminDashboard() {
   const repo = getRepo();
-  const [overview, teams, students, analytics, ledger, audit] = await Promise.all([
+  const [overview, teams, analytics, ledger, audit] = await Promise.all([
     repo.getOverview(),
     repo.getTeams(),
-    repo.getStudents(),
     repo.getAnalytics(),
     repo.listTransactions({ pageSize: 5 }),
     repo.listAudit(8),
   ]);
-  const top = [...students].sort((a, b) => b.points - a.points).slice(0, 5);
 
   return (
     <div className="mx-auto max-w-7xl">
@@ -53,7 +50,7 @@ export default async function AdminDashboard() {
         </Panel>
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+      <div className="mt-6">
         <Panel title="Latest transactions" action={<Link href="/admin/points" className="text-xs text-accent hover:underline">Open ledger</Link>}>
           <div className="space-y-2 p-2">
             {ledger.rows.length === 0 && <p className="p-6 text-center text-sm text-dim">No transactions yet. Award the first points.</p>}
@@ -61,25 +58,6 @@ export default async function AdminDashboard() {
               <TransactionCard key={t.id} tx={t} href={`/transactions/${t.id}`} />
             ))}
           </div>
-        </Panel>
-        <Panel title="Top performers" action={<Link href="/admin/students" className="text-xs text-accent hover:underline">All students</Link>}>
-          <ul className="divide-y divide-line">
-            {top.map((s, i) => (
-              <li key={s.id}>
-                <Link href={`/students/${s.id}`} className="flex items-center gap-3 px-3 py-3 hover:bg-surface">
-                  <span className="num w-5 text-center text-sm font-bold text-faint">{i + 1}</span>
-                  <StudentAvatar name={s.name} color={s.teamColor} glow={s.teamGlow} size={36} />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium">{s.name}</p>
-                    <p className="text-xs" style={{ color: s.teamColor }}>
-                      {s.teamName}
-                    </p>
-                  </div>
-                  <span className="num font-semibold">{formatPoints(s.points)}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
         </Panel>
       </div>
 

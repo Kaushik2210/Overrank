@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { signInAdmin } from "./helpers";
 
 const WIDTHS = [320, 375, 390, 430, 768, 1024, 1366, 1440, 1920];
-const PUBLIC = ["/", "/leaderboard", "/teams", "/teams/slytherin", "/events", "/achievements", "/about", "/settings", "/students/2647109", "/login"];
+const PUBLIC = ["/", "/leaderboard", "/teams", "/teams/slytherin", "/events", "/achievements", "/about", "/settings", "/login"];
 const ADMIN = ["/admin", "/admin/points", "/admin/students", "/admin/analytics", "/admin/events", "/admin/achievements", "/admin/settings"];
 
 async function settle(page: Page) {

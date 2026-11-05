@@ -10,9 +10,8 @@ test.describe("public site needs no login", () => {
     });
   }
 
-  test("a player profile is public", async ({ page }) => {
-    await page.goto("/students/2647109");
-    await expect(page.getByRole("heading", { name: "Aman Sah" })).toBeVisible();
+  test("there are no public student profile pages", async ({ page }) => {
+    expect((await page.goto("/students/2647109"))?.status()).toBe(404);
   });
 
   test("there is no student sign-in or student-only pages", async ({ page }) => {

@@ -1,5 +1,4 @@
 import { Check, CalendarCheck, FileText, ShieldCheck, Trophy, UserCheck } from "lucide-react";
-import Link from "next/link";
 import { StatusPill } from "./TransactionCard";
 import { Timeline } from "@/components/ui/Timeline";
 import { cn, signed } from "@/lib/utils";
@@ -33,9 +32,7 @@ export function TransactionDetail({ tx, evidenceHref }: { tx: PointTransaction; 
             <div className="flex justify-between gap-4">
               <dt className="text-faint">Student</dt>
               <dd>
-                <Link href={`/students/${tx.studentId}`} className="hover:text-accent">
-                  {tx.studentName}
-                </Link>
+                {tx.studentName}
               </dd>
             </div>
           )}

@@ -1,7 +1,6 @@
 "use client";
 
 import { Plus, Search } from "lucide-react";
-import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useAdmin } from "./AdminShell";
 import { StudentAvatar } from "@/components/gamification/StudentAvatar";
@@ -51,12 +50,12 @@ export function StudentsTable({ students, teams }: { students: StudentStanding[]
         {rows.map((s) => (
           <li key={s.id} className="glass flex items-center gap-3 rounded-lg p-3.5">
             <StudentAvatar name={s.name} color={s.teamColor} glow={s.teamGlow} size={44} />
-            <Link href={`/students/${s.id}`} className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium hover:text-accent">{s.name}</p>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium">{s.name}</p>
               <p className="num truncate text-xs text-faint">
                 {s.id} · <span style={{ color: s.teamColor }}>{s.teamName}</span>
               </p>
-            </Link>
+            </div>
             <div className="text-right">
               <p className={cn("num text-lg font-semibold", s.points < 0 && "text-danger")}>{formatPoints(s.points)}</p>
               <p className="num text-[10px] text-faint">Lv {s.level} · #{s.rank}</p>
