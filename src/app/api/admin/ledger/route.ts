@@ -28,7 +28,7 @@ export async function GET(req: Request) {
   const head = ["Date", "Student ID", "Student", "Team", "Category", "Points", "Reason", "Event", "Awarded by", "Status"];
   const lines = [
     head.map(cell).join(","),
-    ...rows.map((t) => [new Date(t.createdAt).toISOString(), t.studentId, t.studentName, t.teamName, t.categoryName, t.amount, t.reason, t.eventTitle ?? "", t.awardedBy, t.status].map(cell).join(",")),
+    ...rows.map((t) => [new Date(t.createdAt).toISOString(), t.studentId ?? "", t.studentName, t.teamName, t.categoryName, t.amount, t.reason, t.eventTitle ?? "", t.awardedBy, t.status].map(cell).join(",")),
   ];
   return new NextResponse(lines.join("\r\n"), {
     headers: { "Content-Type": "text/csv; charset=utf-8", "Content-Disposition": `attachment; filename="overrank-ledger-${new Date().toISOString().slice(0, 10)}.csv"` },

@@ -51,7 +51,9 @@ export type TxStatus = "active" | "reversed" | "pending";
 
 export type PointTransaction = {
   id: string;
-  studentId: string;
+  /** null for a team award where the individual contributor isn't known */
+  studentId: string | null;
+  /** the team's name for a team award */
   studentName: string;
   teamId: string;
   teamName: string;
@@ -139,7 +141,9 @@ export type Session = {
 };
 
 export type AwardInput = {
+  /** may be empty when `teamId` is given: the points go to the team with no individual credited */
   studentIds: string[];
+  teamId?: string | null;
   amount: number;
   categoryId: string;
   reason: string;

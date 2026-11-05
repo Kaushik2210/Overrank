@@ -58,12 +58,28 @@ test.describe("faculty flows", () => {
     await expect(page.getByRole("link", { name: "Gayathri V S" }).first()).toBeVisible();
   });
 
+  test("admin can give points to a team without naming a student", async ({ page }) => {
+    await signInAdmin(page);
+    await page.getByRole("button", { name: "Award points" }).first().click();
+    const dialog = page.getByRole("dialog", { name: "Award points" });
+    await dialog.getByLabel("Team", { exact: true }).selectOption({ index: 1 });
+    await dialog.getByLabel("Points").fill("12");
+    await dialog.getByLabel("Category").selectOption({ label: "Sports" });
+    await dialog.getByLabel("Reason").fill("Group win team only e2e");
+    await dialog.getByRole("button", { name: "Award points" }).click();
+    await expect(page.getByText("Points awarded to")).toBeVisible();
+    await page.getByRole("button", { name: "Done" }).click();
+
+    await page.goto("/admin/points?q=Group win team only e2e");
+    await expect(page.locator("tbody").getByText("Team award").first()).toBeVisible();
+  });
+
   test("award form validates before submitting", async ({ page }) => {
     await signInAdmin(page);
     await page.getByRole("button", { name: "Award points" }).first().click();
     const dialog = page.getByRole("dialog", { name: "Award points" });
     await dialog.getByRole("button", { name: "Award points" }).click();
-    await expect(dialog.getByText("Pick at least one student")).toBeVisible();
+    await expect(dialog.getByText("Pick a team")).toBeVisible();
     await expect(dialog.getByText("Pick a category")).toBeVisible();
   });
 

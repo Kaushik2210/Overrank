@@ -7,7 +7,8 @@ export const iconSchema = z.string().regex(/^[A-Za-z0-9]{1,30}$/, "Invalid icon"
 export const colorSchema = z.string().regex(/^#[0-9a-fA-F]{6}$/, "Use a hex colour like #22C55E");
 
 export const awardSchema = z.object({
-  studentIds: z.array(studentIdSchema).min(1, "Pick at least one student").max(80),
+  studentIds: z.array(studentIdSchema).max(80),
+  teamId: idSchema.optional().nullable(),
   amount: z.coerce
     .number({ message: "Enter a number" })
     .int("Whole numbers only")
@@ -16,7 +17,7 @@ export const awardSchema = z.object({
   categoryId: idSchema.or(z.literal("")).refine((v) => v !== "", "Pick a category"),
   reason: z.string().trim().min(3, "Add a reason").max(200),
   eventId: idSchema.optional().nullable(),
-});
+}).refine((v) => v.studentIds.length > 0 || !!v.teamId, { message: "Pick a team", path: ["teamId"] });
 export type AwardFormInput = z.infer<typeof awardSchema>;
 
 export const teamSchema = z.object({

@@ -265,6 +265,7 @@ function addDemo(s: Store, now: number) {
   const catTotals = new Map<string, number>();
   for (const t of s.transactions) {
     if (t.status === "pending") continue;
+    if (!t.studentId) continue;
     totals.set(t.studentId, (totals.get(t.studentId) ?? 0) + t.amount);
     const k = `${t.studentId}|${t.categoryId}`;
     catTotals.set(k, (catTotals.get(k) ?? 0) + t.amount);

@@ -2,7 +2,6 @@ import { ArrowRight, ClipboardCheck, Medal, Swords, TrendingUp } from "lucide-re
 import Link from "next/link";
 import { EventCard } from "@/components/events/EventCard";
 import { AchievementBadge, RARITY } from "@/components/gamification/AchievementBadge";
-import { StudentAvatar } from "@/components/gamification/StudentAvatar";
 import { Marquee } from "@/components/fx/Marquee";
 import { Hero } from "@/components/landing/Hero";
 import { Section } from "@/components/landing/Section";
@@ -15,7 +14,6 @@ import { StaggerGroup, StaggerItem } from "@/components/ui/Stagger";
 import { getRepo } from "@/lib/data";
 import { Icon } from "@/lib/icons";
 import { teamVars } from "@/lib/team-style";
-import { formatPoints } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -28,9 +26,8 @@ const STEPS = [
 
 export default async function Landing() {
   const repo = getRepo();
-  const [teams, students, categories, events, achievements, overview, analytics, latest] = await Promise.all([
+  const [teams, categories, events, achievements, overview, analytics, latest] = await Promise.all([
     repo.getTeams(),
-    repo.getStudents(),
     repo.getCategories(),
     repo.listEvents(),
     repo.listAchievements(),
@@ -38,7 +35,6 @@ export default async function Landing() {
     repo.getAnalytics(),
     repo.listTransactions({ pageSize: 12 }),
   ]);
-  const performers = [...students].sort((a, b) => b.points - a.points).slice(0, 5);
   const upcoming = events.filter((e) => e.status !== "past").slice(0, 3);
   const recent = [...achievements].sort((a, b) => b.unlockedBy - a.unlockedBy).slice(0, 6);
 
@@ -60,7 +56,7 @@ export default async function Landing() {
               <span key={t.id} className="num inline-flex items-center gap-2 text-sm whitespace-nowrap">
                 <span className="size-2 rounded-full" style={{ background: t.teamColor }} aria-hidden />
                 <span className={t.amount >= 0 ? "font-semibold text-success" : "font-semibold text-danger"}>{t.amount > 0 ? "+" : ""}{t.amount}</span>
-                <span className="text-ink">{t.studentName}</span>
+                <span className="text-ink">{t.teamName}</span>
                 <span className="text-faint">{t.categoryName}</span>
               </span>
             ))}
@@ -120,33 +116,6 @@ export default async function Landing() {
                   <h3 className="font-display text-lg font-bold">{t.name}</h3>
                   <p className="text-sm text-dim">{t.motto}</p>
                 </div>
-              </Link>
-            </StaggerItem>
-          ))}
-        </StaggerGroup>
-      </Section>
-
-      <Section eyebrow="Top performers" title="Individual standouts" tint>
-        <StaggerGroup gap={0.08} className="mx-auto max-w-3xl space-y-3">
-          {performers.map((s, i) => (
-            <StaggerItem key={s.id}>
-              <Link
-                href={`/students/${s.id}`}
-                style={teamVars({ colorPrimary: s.teamColor, colorGlow: s.teamGlow })}
-                className="glass flex items-center gap-4 rounded-lg p-4 transition-colors hover:border-line-strong"
-              >
-                <span className="num w-6 text-center text-lg font-bold text-faint">{i + 1}</span>
-                <StudentAvatar name={s.name} color={s.teamColor} glow={s.teamGlow} size={44} />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-semibold">{s.name}</p>
-                  <p className="text-xs" style={{ color: "var(--team-glow)" }}>
-                    {s.teamName} · Level {s.level}
-                  </p>
-                </div>
-                <p className="num text-xl font-semibold">
-                  {formatPoints(s.points)}
-                  <span className="ml-1 text-xs text-faint">pts</span>
-                </p>
               </Link>
             </StaggerItem>
           ))}

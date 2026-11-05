@@ -60,7 +60,7 @@ export default async function PointsPage({ searchParams }: { searchParams: Promi
                       Date <SortIcon on={sort === "newest" || sort === "oldest"} down={sort === "newest"} />
                     </Link>
                   </th>
-                  <th className="px-4 py-3 font-medium">Student</th>
+                  <th className="px-4 py-3 font-medium">Awarded to</th>
                   <th className="px-4 py-3 font-medium">Category</th>
                   <th className="px-4 py-3 font-medium">Reason</th>
                   <th className="px-4 py-3 text-right font-medium">
@@ -80,7 +80,7 @@ export default async function PointsPage({ searchParams }: { searchParams: Promi
                         <span className="size-2 shrink-0 rounded-full" style={{ background: t.teamColor }} aria-hidden />
                         {t.studentName}
                       </Link>
-                      <span className="num ml-4 text-xs text-faint">{t.studentId}</span>
+                      <span className="num ml-4 text-xs text-faint">{t.studentId ?? "Team award"}</span>
                     </td>
                     <td className="px-4 py-3 text-dim">{t.categoryName}</td>
                     <td className="max-w-xs truncate px-4 py-3 text-dim">{t.reason}</td>

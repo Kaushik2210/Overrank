@@ -59,7 +59,7 @@ describe("seed rows against a real database", () => {
 
     // student totals
     const expectedStudent = new Map<string, number>();
-    for (const t of store.transactions) if (t.status !== "pending") expectedStudent.set(t.studentId, (expectedStudent.get(t.studentId) ?? 0) + t.amount);
+    for (const t of store.transactions) if (t.status !== "pending" && t.studentId) expectedStudent.set(t.studentId, (expectedStudent.get(t.studentId) ?? 0) + t.amount);
     const sp = await db.query<{ student_id: string; points: number }>("select student_id, points from student_points");
     for (const r of sp.rows) expect(r.points, r.student_id).toBe(expectedStudent.get(r.student_id) ?? 0);
 

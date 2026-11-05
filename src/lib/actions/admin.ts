@@ -28,6 +28,7 @@ export async function awardPointsAction(fd: FormData) {
   }
   const p = awardSchema.safeParse({
     studentIds: ids,
+    teamId: fd.get("teamId") || null,
     amount: fd.get("amount"),
     categoryId: fd.get("categoryId"),
     reason: fd.get("reason"),

@@ -67,8 +67,8 @@ async function loadSnapshot(): Promise<Store> {
 
   const transactions: PointTransaction[] = txs.map((t) => ({
     id: t.id,
-    studentId: t.student_id,
-    studentName: student.get(t.student_id)?.name ?? t.student_id,
+    studentId: t.student_id ?? null,
+    studentName: t.student_id ? (student.get(t.student_id)?.name ?? t.student_id) : (team.get(t.team_id)?.name ?? "Team"),
     teamId: t.team_id,
     teamName: team.get(t.team_id)?.name ?? "",
     teamColor: team.get(t.team_id)?.color_primary ?? "#888888",
@@ -184,12 +184,15 @@ export const supabaseRepo: Repo = {
   async awardPoints(actor, input): Promise<AwardResult> {
     staff(actor);
     const first = input.studentIds[0];
-    const before = await readFresh(async () => ({ teams: await memoryRepo.getTeams(), student: await memoryRepo.findStudent(first) }));
-    if (!before.student) throw new Error("Unknown student");
+    const before = await readFresh(async () => ({ teams: await memoryRepo.getTeams(), student: first ? await memoryRepo.findStudent(first) : null }));
+    if (first && !before.student) throw new Error("Unknown student");
+    const awardTeamId = before.student ? before.student.teamId : input.teamId;
+    if (!awardTeamId) throw new Error("Pick a team");
     const { data, error } = await db().rpc("award_points", {
       p_actor: actor.userId,
       p_actor_name: actor.name,
       p_student_ids: input.studentIds,
+      ...(first ? {} : { p_team_id: awardTeamId }),
       p_amount: input.amount,
       p_category: input.categoryId,
       p_reason: input.reason,
@@ -200,8 +203,8 @@ export const supabaseRepo: Repo = {
     const snap = await loadSnapshot();
     const teams = await withSnapshot(snap, () => memoryRepo.getTeams());
     const ids = new Set((data.transactions as Row[]).map((t) => t.id));
-    const bTeam = before.teams.find((t) => t.id === before.student!.teamId)!;
-    const aTeam = teams.find((t) => t.id === before.student!.teamId)!;
+    const bTeam = before.teams.find((t) => t.id === awardTeamId)!;
+    const aTeam = teams.find((t) => t.id === awardTeamId)!;
     const unlocked: UnlockedAchievement[] = (data.unlocked as Row[])
       .map((u) => ({ studentId: u.student_id, studentName: u.student_name, achievement: snap.achievements.find((a) => a.id === u.achievement_id) as Achievement }))
       .filter((u) => u.achievement);

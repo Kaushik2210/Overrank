@@ -75,7 +75,7 @@ function teamStandings(s: Store): TeamStanding[] {
 
 function studentStandings(s: Store): StudentStanding[] {
   const pts = new Map<string, number>();
-  for (const t of counted(s)) pts.set(t.studentId, (pts.get(t.studentId) ?? 0) + t.amount);
+  for (const t of counted(s)) if (t.studentId) pts.set(t.studentId, (pts.get(t.studentId) ?? 0) + t.amount);
   const teamPts = new Map<string, number>();
   for (const st of s.students) teamPts.set(st.teamId, (teamPts.get(st.teamId) ?? 0) + (pts.get(st.id) ?? 0));
   const teams = new Map(s.teams.map((t) => [t.id, t]));
@@ -149,10 +149,11 @@ function checkAchievements(s: Store, studentId: string): UnlockedAchievement[] {
   return out;
 }
 
-function newTx(s: Store, p: Omit<PointTransaction, "id" | "createdAt" | "teamId" | "teamName" | "teamColor" | "studentName" | "categoryName" | "eventTitle" | "type" | "isDemo" | "reversesId"> & { reversesId?: string | null }): PointTransaction {
-  const st = s.students.find((x) => x.id === p.studentId);
-  if (!st) throw new Error(`Unknown student ${p.studentId}`);
-  const team = s.teams.find((t) => t.id === st.teamId)!;
+function newTx(s: Store, p: Omit<PointTransaction, "id" | "createdAt" | "teamId" | "teamName" | "teamColor" | "studentName" | "categoryName" | "eventTitle" | "type" | "isDemo" | "reversesId"> & { reversesId?: string | null; teamId?: string | null }): PointTransaction {
+  const st = p.studentId ? s.students.find((x) => x.id === p.studentId) : null;
+  if (p.studentId && !st) throw new Error(`Unknown student ${p.studentId}`);
+  const team = s.teams.find((t) => t.id === (st ? st.teamId : p.teamId));
+  if (!team) throw new Error("Unknown team");
   const cat = s.categories.find((c) => c.id === p.categoryId);
   if (!cat) throw new Error("Unknown category");
   const ev = p.eventId ? s.events.find((e) => e.id === p.eventId) : null;
@@ -160,7 +161,7 @@ function newTx(s: Store, p: Omit<PointTransaction, "id" | "createdAt" | "teamId"
     ...p,
     id: randomUUID(),
     createdAt: nowIso(),
-    studentName: st.name,
+    studentName: st ? st.name : team.name,
     teamId: team.id,
     teamName: team.name,
     teamColor: team.colorPrimary,
@@ -350,18 +351,21 @@ export const memoryRepo: Repo = {
     const s = S();
     if (!input.amount) throw new Error("Amount can't be zero");
     const ids = [...new Set(input.studentIds)];
-    if (!ids.length) throw new Error("Pick at least one student");
-    const first = s.students.find((x) => x.id === ids[0]);
-    if (!first) throw new Error("Unknown student");
+    if (!ids.length && !input.teamId) throw new Error("Pick a team");
+    const awardTeamId = ids.length ? s.students.find((x) => x.id === ids[0])?.teamId : input.teamId;
+    if (!awardTeamId || !s.teams.some((t) => t.id === awardTeamId)) throw new Error(ids.length ? "Unknown student" : "Unknown team");
+    const first = { teamId: awardTeamId };
     const before = teamStandings(s);
     const bTeam = before.find((t) => t.id === first.teamId)!;
     const bLeader = before[0].id;
 
     const transactions: PointTransaction[] = [];
     const unlocked: UnlockedAchievement[] = [];
-    for (const id of ids) {
+    // no students picked: one team-level entry, nobody credited individually
+    for (const id of ids.length ? ids : [null]) {
       const tx = newTx(s, {
         studentId: id,
+        teamId: awardTeamId,
         amount: input.amount,
         categoryId: input.categoryId,
         reason: input.reason,
@@ -371,7 +375,7 @@ export const memoryRepo: Repo = {
         evidenceUrl: input.evidenceUrl ?? null,
       });
       transactions.push(tx);
-      unlocked.push(...checkAchievements(s, id));
+      if (id) unlocked.push(...checkAchievements(s, id));
       audit(s, actor, input.amount > 0 ? "points.award" : "points.deduct", tx.studentName, `${input.amount > 0 ? "+" : ""}${input.amount} in ${tx.categoryName}: ${input.reason}`);
     }
 
@@ -396,6 +400,7 @@ export const memoryRepo: Repo = {
     tx.status = "reversed";
     newTx(s, {
       studentId: tx.studentId,
+      teamId: tx.teamId,
       amount: -tx.amount,
       categoryId: tx.categoryId,
       reason: `Reversal: ${note || tx.reason}`,
@@ -539,7 +544,7 @@ export const memoryRepo: Repo = {
     for (const t of rows) catPoints.set(t.categoryId, (catPoints.get(t.categoryId) ?? 0) + Math.max(0, t.amount));
     const students = studentStandings(s);
     const active = new Map<string, Set<string>>();
-    for (const t of rows) (active.get(t.teamId) ?? active.set(t.teamId, new Set()).get(t.teamId)!).add(t.studentId);
+    for (const t of rows) if (t.studentId) (active.get(t.teamId) ?? active.set(t.teamId, new Set()).get(t.teamId)!).add(t.studentId);
     return {
       pointsOverTime,
       teamPerformance: teams.map((t) => ({ slug: t.slug, name: t.name, color: t.colorPrimary, points: t.points })),

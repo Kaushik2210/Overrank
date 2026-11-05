@@ -1,27 +1,25 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { Flame, Play, Trophy, Users } from "lucide-react";
+import { Flame, Play, Trophy } from "lucide-react";
 import { useState } from "react";
 import { LeaderboardView } from "./LeaderboardView";
 import { MoversBoard } from "./MoversBoard";
-import { PlayersBoard } from "./PlayersBoard";
 import { SeasonRace } from "./SeasonRace";
 import { spring } from "@/lib/motion";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 import { cn } from "@/lib/utils";
-import type { Analytics, StudentStanding, TeamStanding } from "@/lib/data/types";
+import type { Analytics, TeamStanding } from "@/lib/data/types";
 
 const ALL_TABS = [
   { id: "teams", label: "Teams", icon: Trophy },
-  { id: "players", label: "Players", icon: Users },
   { id: "movers", label: "Movers", icon: Flame },
   { id: "replay", label: "Season replay", icon: Play },
 ] as const;
 type Tab = (typeof ALL_TABS)[number]["id"];
 
-/** One leaderboard, four views. The tab indicator glides and each view slides in from the direction of travel. */
-export function LeaderboardTabs({ teams, students, series }: { teams: TeamStanding[]; students: StudentStanding[]; series: Analytics["pointsOverTime"] }) {
+/** One leaderboard, three views. The tab indicator glides and each view slides in from the direction of travel. */
+export function LeaderboardTabs({ teams, series }: { teams: TeamStanding[]; series: Analytics["pointsOverTime"] }) {
   const rm = useReducedMotionSafe();
   // a replay of an empty season says nothing, so that view appears once the first points land
   const TABS = teams.some((t) => t.points !== 0) ? ALL_TABS : ALL_TABS.filter((t) => t.id !== "replay");
@@ -70,7 +68,6 @@ export function LeaderboardTabs({ teams, students, series }: { teams: TeamStandi
           transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
         >
           {tab === "teams" && <LeaderboardView initial={teams} />}
-          {tab === "players" && <PlayersBoard students={students} teams={teams} />}
           {tab === "movers" && <MoversBoard teams={teams} />}
           {tab === "replay" && <SeasonRace teams={teams} series={series} />}
         </motion.div>

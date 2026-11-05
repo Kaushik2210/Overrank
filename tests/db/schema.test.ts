@@ -74,6 +74,26 @@ describe("ledger is append-only", () => {
   });
 });
 
+describe("team awards", () => {
+  it("count for the team only and credit nobody individually", async () => {
+    const r = await db.query<AwardRow>("select public.award_points($1, 'Admin', '{}'::text[], 35, $2, 'Group win', null, null, $3)", [s.u.admin, s.sports, s.teamB]);
+    expect(r.rows[0].award_points.transactions).toHaveLength(1);
+    const t = await db.query<{ slug: string; points: number }>("select slug, points from team_points order by slug");
+    expect(t.rows).toEqual([
+      { slug: "alpha", points: 0 },
+      { slug: "beta", points: 35 },
+    ]);
+    expect((await db.query<{ points: number }>("select coalesce(sum(points),0)::int as points from student_points")).rows[0].points).toBe(0);
+  });
+
+  it("need a real team and can be reversed", async () => {
+    await expectDenied(db.query("select public.award_points($1, 'Admin', '{}'::text[], 5, $2, 'nobody')", [s.u.admin, s.sports]));
+    const r = await db.query<AwardRow>("select public.award_points($1, 'Admin', '{}'::text[], 20, $2, 'Group win', null, null, $3)", [s.u.admin, s.sports, s.teamA]);
+    await db.query("select public.reverse_transaction($1, 'Admin', $2, 'oops')", [s.u.admin, r.rows[0].award_points.transactions[0].id]);
+    expect((await db.query<{ points: number }>("select points from team_points where slug='alpha'")).rows[0].points).toBe(0);
+  });
+});
+
 describe("reversal", () => {
   it("adds a compensating row, keeps history and nets to zero", async () => {
     const res = await award(60);

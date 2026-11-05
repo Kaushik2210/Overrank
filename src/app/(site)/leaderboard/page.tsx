@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 export default async function LeaderboardPage() {
   const repo = getRepo();
-  const [teams, students, analytics] = await Promise.all([repo.getTeams(), repo.getStudents(), repo.getAnalytics()]);
+  const [teams, analytics] = await Promise.all([repo.getTeams(), repo.getAnalytics()]);
   const started = teams.some((t) => t.points !== 0);
   return (
     <div className="relative">
@@ -21,7 +21,7 @@ export default async function LeaderboardPage() {
           description="Every point counts. Standings update the moment the ledger does."
           className="mb-10 sm:mb-12"
         />
-        <LeaderboardTabs teams={teams} students={students} series={analytics.pointsOverTime} />
+        <LeaderboardTabs teams={teams} series={analytics.pointsOverTime} />
       </div>
     </div>
   );

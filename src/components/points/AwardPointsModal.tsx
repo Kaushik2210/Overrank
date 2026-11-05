@@ -40,6 +40,7 @@ export function AwardPointsModal(props: Props) {
 
 function AwardPointsModalInner({ open, onClose, categories, events, teams, prefillStudent }: Props) {
   const [picked, setPicked] = useState<Pick[]>(prefillStudent ? [prefillStudent] : []);
+  const [teamId, setTeamId] = useState("");
   const [q, setQ] = useState("");
   const [results, setResults] = useState<Pick[]>([]);
   const [sign, setSign] = useState<1 | -1>(1);
@@ -65,6 +66,9 @@ function AwardPointsModalInner({ open, onClose, categories, events, teams, prefi
     return () => window.clearTimeout(t);
   }, [q, open]);
 
+  // with students picked, their own team is used; the team selector only matters for a team-only award
+  const awardTeam = picked.length ? picked[0].teamId : teamId;
+
   const add = (s: Pick) => setPicked((p) => (p.some((x) => x.id === s.id) ? p : [...p, s]));
   const remove = (id: string) => setPicked((p) => p.filter((x) => x.id !== id));
 
@@ -76,7 +80,7 @@ function AwardPointsModalInner({ open, onClose, categories, events, teams, prefi
 
   const submit = () => {
     const amt = sign * Math.abs(Number(amount));
-    const parsed = awardSchema.safeParse({ studentIds: picked.map((p) => p.id), amount: amt, categoryId, reason, eventId: eventId || null });
+    const parsed = awardSchema.safeParse({ studentIds: picked.map((p) => p.id), teamId: teamId || null, amount: amt, categoryId, reason, eventId: eventId || null });
     if (!parsed.success) {
       const e: Record<string, string> = {};
       for (const i of parsed.error.issues) e[String(i.path[0])] ??= i.message;
@@ -87,6 +91,7 @@ function AwardPointsModalInner({ open, onClose, categories, events, teams, prefi
     start(async () => {
       const fd = new FormData();
       fd.set("studentIds", JSON.stringify(picked.map((p) => p.id)));
+      if (teamId) fd.set("teamId", teamId);
       fd.set("amount", String(amt));
       fd.set("categoryId", categoryId);
       fd.set("reason", reason);
@@ -111,7 +116,7 @@ function AwardPointsModalInner({ open, onClose, categories, events, teams, prefi
 
   return (
     <>
-      <Modal open={open} onClose={result ? closeAll : onClose} title={result ? "Points awarded" : "Award points"} description={result ? undefined : "Add or deduct points for one student or a whole group."} className="sm:max-w-xl" bare={!!result}>
+      <Modal open={open} onClose={result ? closeAll : onClose} title={result ? "Points awarded" : "Award points"} description={result ? undefined : "Add or deduct points for a team. Naming who earned them is optional."} className="sm:max-w-xl" bare={!!result}>
         <AnimatePresence mode="wait" initial={false}>
           {result ? (
             <motion.div key="done" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="px-6 py-12 text-center">
@@ -127,7 +132,7 @@ function AwardPointsModalInner({ open, onClose, categories, events, teams, prefi
                 Points {result.amount >= 0 ? "awarded" : "deducted"} to
               </motion.p>
               <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="mt-1 font-display text-2xl font-bold">
-                {result.names.length === 1 ? result.names[0] : `${result.names.length} students`}
+                {result.names.length === 0 ? result.r.teamAfter.name : result.names.length === 1 ? result.names[0] : `${result.names.length} students`}
               </motion.p>
               <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="glass mx-auto mt-6 max-w-xs rounded-lg p-4">
                 {result.r.leaderChanged && <p className="num mb-1 text-[11px] font-bold tracking-[0.3em] text-warn">NEW LEADER</p>}
@@ -149,7 +154,20 @@ function AwardPointsModalInner({ open, onClose, categories, events, teams, prefi
             </motion.div>
           ) : (
             <motion.form key="form" onSubmit={(e) => (e.preventDefault(), submit())} className="space-y-5 p-5" noValidate>
-              <Field label="Students" error={errors.studentIds}>
+              <Field label="Team" error={errors.teamId}>
+                {({ id, describedBy, invalid }) => (
+                  <Select id={id} value={picked.length ? awardTeam : teamId} onChange={(e) => setTeamId(e.target.value)} disabled={picked.length > 0} aria-describedby={describedBy} invalid={invalid}>
+                    <option value="">Choose a team...</option>
+                    {teams.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.name}
+                      </option>
+                    ))}
+                  </Select>
+                )}
+              </Field>
+
+              <Field label="Who earned it? (optional)" error={errors.studentIds}>
                 {({ id, describedBy }) => (
                   <div>
                     <div className="relative">
@@ -172,7 +190,7 @@ function AwardPointsModalInner({ open, onClose, categories, events, teams, prefi
                     <div className="mt-2 flex items-center gap-2">
                       <Users className="size-4 text-faint" aria-hidden />
                       <select aria-label="Add a whole team" onChange={(e) => (e.target.value && addTeam(e.target.value), (e.target.value = ""))} className="h-9 rounded-md border border-line bg-bg-2 px-2 text-xs text-dim" defaultValue="">
-                        <option value="">Add a whole team...</option>
+                        <option value="">Add every member of a team...</option>
                         {teams.map((t) => (
                           <option key={t.id} value={t.id}>
                             {t.name}

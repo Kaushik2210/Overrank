@@ -1,11 +1,10 @@
-import { Award, CalendarCheck, Crown, Star, TrendingUp, Users } from "lucide-react";
+import { Award, CalendarCheck, Star, TrendingUp, Users } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BarsChart, TrendChart } from "@/components/charts/LazyCharts";
 import { AchievementBadge, RARITY } from "@/components/gamification/AchievementBadge";
 import { AnimatedCounter } from "@/components/gamification/AnimatedCounter";
-import { AnimatedProgressBar } from "@/components/gamification/AnimatedProgressBar";
 import { StudentAvatar } from "@/components/gamification/StudentAvatar";
 import { RankDelta } from "@/components/leaderboard/RankDelta";
 import { TeamLogo } from "@/components/leaderboard/TeamLogo";
@@ -15,7 +14,6 @@ import { StaggerGroup, StaggerItem } from "@/components/ui/Stagger";
 import { Timeline } from "@/components/ui/Timeline";
 import { getRepo } from "@/lib/data";
 import { teamVars } from "@/lib/team-style";
-import { formatPoints } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -74,38 +72,6 @@ export default async function TeamPage({ params }: Props) {
       </section>
 
       <div className="mx-auto max-w-6xl space-y-16 px-4 py-12 sm:px-6">
-        {/* top contributors */}
-        <Reveal>
-          <Heading icon={<Crown className="size-6 text-warn" aria-hidden />}>Top contributors</Heading>
-          {d.topContributors.length === 0 ? (
-            <p className="glass rounded-lg p-6 text-dim">No points on the board yet. The first award will show up here.</p>
-          ) : (
-            <StaggerGroup className="grid gap-3 md:grid-cols-3">
-              {d.topContributors.slice(0, 3).map((m, i) => (
-                <StaggerItem key={m.id}>
-                  <Link href={`/students/${m.id}`} className="glass block rounded-lg p-5 transition-transform duration-300 hover:-translate-y-1">
-                    <div className="flex items-center gap-3">
-                      <StudentAvatar name={m.name} color={t.colorPrimary} glow={t.colorGlow} size={48} />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate font-semibold">{m.name}</p>
-                        <p className="text-xs text-faint">Level {m.level}</p>
-                      </div>
-                      <span className="num text-2xl font-bold text-faint">{i + 1}</span>
-                    </div>
-                    <div className="mt-4 flex items-end justify-between">
-                      <span className="num text-2xl font-semibold" style={{ color: "var(--team-glow)" }}>
-                        {formatPoints(m.points)}
-                      </span>
-                      <span className="text-xs text-faint">{Math.round(m.teamContribution * 100)}% of team</span>
-                    </div>
-                    <AnimatedProgressBar value={m.teamContribution} label={`${m.name} share of team points`} className="mt-2" height={6} />
-                  </Link>
-                </StaggerItem>
-              ))}
-            </StaggerGroup>
-          )}
-        </Reveal>
-
         {/* charts */}
         <div className="grid gap-4 lg:grid-cols-2">
           <TrendChart title="Points over eight weeks" subtitle="Cumulative team total" data={d.weekly} xKey="week" series={[{ key: "total", name: "Total", color: t.colorPrimary }]} area />
@@ -122,11 +88,7 @@ export default async function TeamPage({ params }: Props) {
                   <StudentAvatar name={m.name} color={t.colorPrimary} glow={t.colorGlow} size={40} />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium">{m.name}</p>
-                    <p className="num text-xs text-faint">
-                      {m.id} · Lv {m.level}
-                    </p>
                   </div>
-                  <span className="num text-sm font-semibold">{formatPoints(m.points)}</span>
                 </Link>
               </StaggerItem>
             ))}
