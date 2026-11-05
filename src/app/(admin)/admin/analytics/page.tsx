@@ -17,8 +17,7 @@ export default async function AnalyticsPage() {
         <BarsChart title="Team performance" subtitle="Current total points" data={a.teamPerformance.map((t) => ({ name: t.name, value: t.points, color: t.color }))} />
         <DonutChart title="Category distribution" subtitle="Share of points awarded" data={a.categoryDistribution.map((c) => ({ name: c.name, value: c.points, color: c.color }))} />
       </div>
-      <div className="grid gap-6 lg:grid-cols-2">
-        <BarsChart title="Top contributors" subtitle="Individual points" layout="vertical" height={330} data={a.topContributors.map((s) => ({ name: s.name.split(" ")[0], value: s.points, color: s.teamColor }))} />
+      <div>
         <BarsChart title="Participation" subtitle="Students with at least one entry" layout="vertical" height={330} valueLabel="Active students" data={a.participation.map((p) => ({ name: p.name, value: p.active, color: p.color }))} />
       </div>
       <Heatmap rows={a.heatmap} />
