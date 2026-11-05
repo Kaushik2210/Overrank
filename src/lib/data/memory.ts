@@ -475,7 +475,8 @@ export const memoryRepo: Repo = {
     audit(s, actor, "event.winner", e.title, `${t.name}${award ? " (points awarded)" : ""}`);
     if (award && e.points) {
       await memoryRepo.awardPoints(actor, {
-        studentIds: s.students.filter((x) => x.teamId === teamId).map((x) => x.id),
+        studentIds: [],
+        teamId,
         amount: e.points,
         categoryId: e.categoryId,
         reason: `Won ${e.title}`,

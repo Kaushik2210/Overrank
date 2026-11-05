@@ -271,7 +271,7 @@ export const supabaseRepo: Repo = {
     if (error) fail(error);
     await audit(actor, "event.winner", ev.title, `${team.name}${award ? " (points awarded)" : ""}`);
     if (award && ev.points) {
-      await supabaseRepo.awardPoints(actor, { studentIds: snap.students.filter((s) => s.teamId === teamId).map((s) => s.id), amount: ev.points, categoryId: ev.categoryId, reason: `Won ${ev.title}`, eventId });
+      await supabaseRepo.awardPoints(actor, { studentIds: [], teamId, amount: ev.points, categoryId: ev.categoryId, reason: `Won ${ev.title}`, eventId });
     }
   },
 
