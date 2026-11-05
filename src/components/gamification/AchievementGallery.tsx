@@ -22,7 +22,7 @@ export function AchievementGallery({ items, signedIn }: { items: GalleryItem[]; 
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <div role="tablist" aria-label="Filter by rarity" className="inline-flex flex-wrap gap-1 rounded-full border border-line bg-surface p-1">
           {TABS.map((t) => (
-            <button key={t} role="tab" aria-selected={tab === t} onClick={() => setTab(t)} className={cn("relative h-10 rounded-full px-4 text-sm font-medium capitalize transition-colors", tab === t ? "text-bg-0" : "text-dim hover:text-ink")}>
+            <button key={t} role="tab" aria-selected={tab === t} onClick={() => setTab(t)} className={cn("relative h-11 rounded-full px-4 text-sm font-medium capitalize transition-colors", tab === t ? "text-bg-0" : "text-dim hover:text-ink")}>
               {tab === t && <motion.span layoutId="rarity-tab" transition={spring} className="absolute inset-0 rounded-full bg-accent" />}
               <span className="relative">{t}</span>
             </button>

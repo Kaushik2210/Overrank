@@ -53,7 +53,7 @@ export function StartingGrid({ teams }: { teams: TeamStanding[] }) {
         <p className="mx-auto mt-3 max-w-md text-dim">Six houses, zero points. The moment faculty award the first one, this board comes alive.</p>
       </div>
 
-      <ol aria-label="Starting grid" className="mx-auto grid max-w-4xl gap-x-6 gap-y-3 sm:grid-cols-2">
+      <ol aria-label="Starting grid" className="mx-auto grid max-w-4xl grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2">
         {teams.map((t, i) => (
           <motion.li
             key={t.id}

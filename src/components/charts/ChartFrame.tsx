@@ -20,7 +20,15 @@ type Props = {
   height?: number;
 };
 
-export function ChartFrame({ title, subtitle, table, children, className, minWidth = 460, height = 260 }: Props) {
+export function ChartFrame({
+  title,
+  subtitle,
+  table,
+  children,
+  className,
+  minWidth = 460,
+  height = 260,
+}: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-40px" });
   return (
@@ -30,29 +38,38 @@ export function ChartFrame({ title, subtitle, table, children, className, minWid
         {subtitle && <p className="text-xs text-faint">{subtitle}</p>}
       </figcaption>
       <div className="-mx-1 overflow-x-auto px-1">
-        <div style={{ minWidth, height }} role="img" aria-label={`${title}. ${subtitle ?? ""} Data table follows.`}>
-          <InViewCtx.Provider value={inView}>{inView ? children : null}</InViewCtx.Provider>
+        <div
+          style={{ minWidth, height }}
+          role="img"
+          aria-label={`${title}. ${subtitle ?? ""} Data table follows.`}
+        >
+          <InViewCtx.Provider value={inView}>
+            {inView ? children : null}
+          </InViewCtx.Provider>
         </div>
       </div>
-      <table className="sr-only">
-        <caption>{title}</caption>
-        <thead>
-          <tr>
-            {table.head.map((h) => (
-              <th key={h}>{h}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {table.rows.map((r, i) => (
-            <tr key={i}>
-              {r.map((c, j) => (
-                <td key={j}>{c}</td>
+      {/* the wrapper clips the table: a table ignores the 1px width of sr-only and would widen the page */}
+      <div className="sr-only">
+        <table>
+          <caption>{title}</caption>
+          <thead>
+            <tr>
+              {table.head.map((h) => (
+                <th key={h}>{h}</th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {table.rows.map((r, i) => (
+              <tr key={i}>
+                {r.map((c, j) => (
+                  <td key={j}>{c}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </figure>
   );
 }
@@ -63,7 +80,12 @@ export function ChartTooltip({
   label,
 }: {
   active?: boolean;
-  payload?: { name?: string; value?: number; color?: string; dataKey?: string }[];
+  payload?: {
+    name?: string;
+    value?: number;
+    color?: string;
+    dataKey?: string;
+  }[];
   label?: string;
 }) {
   if (!active || !payload?.length) return null;
@@ -73,9 +95,17 @@ export function ChartTooltip({
       <ul className="space-y-0.5">
         {payload.map((p, i) => (
           <li key={i} className="flex items-center gap-2 text-dim">
-            <span className="size-2 rounded-full" style={{ background: p.color }} aria-hidden />
+            <span
+              className="size-2 rounded-full"
+              style={{ background: p.color }}
+              aria-hidden
+            />
             {p.name ?? p.dataKey}
-            <span className="num ml-auto pl-3 font-semibold text-ink">{typeof p.value === "number" ? p.value.toLocaleString("en-IN") : p.value}</span>
+            <span className="num ml-auto pl-3 font-semibold text-ink">
+              {typeof p.value === "number"
+                ? p.value.toLocaleString("en-IN")
+                : p.value}
+            </span>
           </li>
         ))}
       </ul>

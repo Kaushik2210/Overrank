@@ -193,3 +193,9 @@ html[data-motion="reduce"] .marquee-track { animation: none; }
 .shine { position: relative; overflow: hidden; }
 .shine::after { content: ""; position: absolute; inset: 0; transform: translateX(-120%) skewX(-18deg); background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.45), transparent); transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1); pointer-events: none; }
 .shine:hover::after { transform: translateX(120%) skewX(-18deg); }
+
+/* A grid with no column template gets one implicit auto column, which a wide child (a chart, a long row)
+   stretches past the viewport on phones. Default to a single shrinkable column; grid-cols-* still wins. */
+@layer base {
+  .grid { grid-template-columns: minmax(0, 1fr); }
+}

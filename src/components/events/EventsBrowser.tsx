@@ -29,7 +29,7 @@ export function EventsBrowser({ events, teams }: { events: EventItem[]; teams: T
             role="tab"
             aria-selected={filter === f.id}
             onClick={() => setFilter(f.id)}
-            className={cn("relative h-10 rounded-full px-4 text-sm font-medium transition-colors", filter === f.id ? "text-bg-0" : "text-dim hover:text-ink")}
+            className={cn("relative h-11 rounded-full px-4 text-sm font-medium transition-colors", filter === f.id ? "text-bg-0" : "text-dim hover:text-ink")}
           >
             {filter === f.id && <motion.span layoutId="event-filter" transition={spring} className="absolute inset-0 rounded-full bg-accent" />}
             <span className="relative">

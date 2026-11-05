@@ -22,8 +22,8 @@ export function SettingsForm() {
         <h2 className="font-display text-lg font-bold">Sound effects</h2>
         <p className="mt-1 text-sm text-dim">Short tones when points land or ranks change. Off by default and never plays on page load.</p>
         <div className="mt-4 flex flex-wrap items-center gap-3">
-          <button role="switch" aria-checked={p.sound} onClick={() => update({ ...p, sound: !p.sound })} className={cn("relative h-8 w-14 rounded-full border transition-colors", p.sound ? "border-accent bg-accent/30" : "border-line bg-surface-2")}>
-            <span className={cn("absolute top-1 size-5 rounded-full bg-white transition-[left]", p.sound ? "left-8" : "left-1")} />
+          <button role="switch" aria-checked={p.sound} onClick={() => update({ ...p, sound: !p.sound })} className={cn("relative h-8 w-14 rounded-full border transition-colors max-sm:h-11", p.sound ? "border-accent bg-accent/30" : "border-line bg-surface-2")}>
+            <span className={cn("absolute top-1/2 size-5 -translate-y-1/2 rounded-full bg-white transition-[left]", p.sound ? "left-8" : "left-1")} />
             <span className="sr-only">Sound effects</span>
           </button>
           <span className="flex items-center gap-2 text-sm">{p.sound ? <Volume2 className="size-4 text-accent" /> : <VolumeX className="size-4 text-faint" />} {p.sound ? "On" : "Off"}</span>

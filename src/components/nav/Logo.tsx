@@ -14,7 +14,7 @@ export function LogoMark({ size = 32, className }: { size?: number; className?: 
 
 export function Logo({ className, href = "/" }: { className?: string; href?: string }) {
   return (
-    <Link href={href} aria-label="OVERRANK home" className={cn("inline-flex items-center gap-2.5", className)}>
+    <Link href={href} aria-label="OVERRANK home" className={cn("inline-flex items-center gap-2.5 max-sm:min-h-11", className)}>
       <LogoMark />
       <span className="font-display text-[1.05rem] font-bold tracking-[0.14em]">
         OVER<span className="text-accent">RANK</span>

@@ -20,7 +20,7 @@ const variants: Record<Variant, string> = {
 };
 
 const sizes: Record<Size, string> = {
-  sm: "h-9 px-3 text-sm gap-1.5",
+  sm: "h-9 px-3 text-sm gap-1.5 max-sm:h-11 max-sm:min-w-11",
   md: "h-11 px-5 text-sm gap-2", // 44px touch target
   lg: "h-12 px-7 text-base gap-2",
 };

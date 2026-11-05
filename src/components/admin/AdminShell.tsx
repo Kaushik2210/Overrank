@@ -112,7 +112,7 @@ export function AdminShell({ session, categories, events, teams, students, child
             <div className="lg:hidden">
               <Logo href="/admin" />
             </div>
-            <button onClick={openPalette} className="ml-auto flex h-11 min-w-0 items-center gap-2 rounded-md border border-line bg-surface px-3 text-sm text-faint hover:text-ink lg:ml-0 lg:w-80" aria-label="Open command palette">
+            <button onClick={openPalette} className="ml-auto flex h-11 min-w-11 items-center max-sm:justify-center gap-2 rounded-md border border-line bg-surface px-3 text-sm text-faint hover:text-ink lg:ml-0 lg:w-80" aria-label="Open command palette">
               <Search className="size-4" aria-hidden />
               <span className="hidden flex-1 text-left sm:block">Search or run a command</span>
               <kbd className="num hidden items-center gap-1 rounded border border-line px-1.5 py-0.5 text-[10px] sm:flex">

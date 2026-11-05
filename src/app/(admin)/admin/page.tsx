@@ -33,7 +33,7 @@ export default async function AdminDashboard() {
         <div className="xl:col-span-3">
           <TrendChart title="Point activity" subtitle="Cumulative points by team, last 8 weeks" data={analytics.pointsOverTime} xKey="date" series={teams.map((t) => ({ key: t.slug, name: t.name, color: t.colorPrimary }))} height={300} />
         </div>
-        <Panel title="Recent actions" className="xl:col-span-2" action={<Link href="/admin/settings#audit" className="text-xs text-accent hover:underline">Full log</Link>}>
+        <Panel title="Recent actions" className="xl:col-span-2" action={<Link href="/admin/settings#audit" className="text-xs text-accent hover:underline max-sm:inline-flex max-sm:min-h-11 max-sm:min-w-11 max-sm:items-center max-sm:justify-center">Full log</Link>}>
           <ul className="divide-y divide-line">
             {audit.length === 0 && <li className="p-6 text-center text-sm text-dim">No actions logged yet.</li>}
             {audit.map((a) => (
@@ -51,7 +51,7 @@ export default async function AdminDashboard() {
       </div>
 
       <div className="mt-6">
-        <Panel title="Latest transactions" action={<Link href="/admin/points" className="text-xs text-accent hover:underline">Open ledger</Link>}>
+        <Panel title="Latest transactions" action={<Link href="/admin/points" className="text-xs text-accent hover:underline max-sm:inline-flex max-sm:min-h-11 max-sm:min-w-11 max-sm:items-center max-sm:justify-center">Open ledger</Link>}>
           <div className="space-y-2 p-2">
             {ledger.rows.length === 0 && <p className="p-6 text-center text-sm text-dim">No transactions yet. Award the first points.</p>}
             {ledger.rows.map((t) => (

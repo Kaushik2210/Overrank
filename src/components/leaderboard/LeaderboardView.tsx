@@ -93,7 +93,7 @@ export function LeaderboardView({ initial, live = true }: { initial: TeamStandin
       <div className="space-y-8">
         <Podium teams={podium} newLeaderId={newLeader?.id} leaderGain={newLeader?.gain} />
         {rest.length > 0 && (
-          <ol aria-label="Remaining teams" className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <ol aria-label="Remaining teams" className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {rest.map((t, i) => (
               <TeamCard key={t.id} team={t} leaderPoints={leaderPoints} index={i} />
             ))}
